@@ -42,6 +42,8 @@
         class="min-h-screen bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100"
         x-data="layoutState()"
     >
+        @include('components.toast')
+
         <livewire:public.header />
 
         <div class="flex w-full min-h-screen gap-4">
