@@ -68,17 +68,32 @@
             <div>
                 <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Manage</p>
                 <div class="mt-2 space-y-1">
-                    <a class="flex items-center justify-between rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="#">
+                    <a href="{{route('settings')}}" wire:navigate class="flex items-center justify-between rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="#">
                         <span class="flex items-center gap-3">
                             <span class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
                                 <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
                                     <path stroke-linecap="round" d="M4 6h16M4 10h16M4 14h10" />
                                 </svg>
                             </span>
-                            Invoices
+                            Settings
                         </span>
                         <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-slate-900 dark:text-slate-400">24</span>
                     </a>
+
+
+                        <a href="{{route('services')}}" wire:navigate class="flex items-center justify-between rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="#">
+                        <span class="flex items-center gap-3">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                                <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
+                                    <path stroke-linecap="round" d="M4 6h16M4 10h16M4 14h10" />
+                                </svg>
+                            </span>
+                            service
+                        </span>
+                        <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-slate-900 dark:text-slate-400">24</span>
+                    </a>
+            
+            
                     <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="#">
                         <span class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
                             <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
