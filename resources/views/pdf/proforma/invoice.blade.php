@@ -7,7 +7,8 @@
         body { margin: 0; background: #fff; color: #111; font-family: Calibri, DejaVu Sans, Arial, sans-serif; font-size: 12px; line-height: 1.25; }
         .page { position: relative; padding: 28px 70px 90px 70px; box-sizing: border-box; background: #fff; overflow: hidden; }
         .header { display: block; margin: 0 auto 14px auto; height: auto; }
-        .footer { position: fixed; left: 0; right: 0; bottom: -1px; display: block; height: auto; transform-origin: bottom left; }
+        .footer { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; }
+        .footer img { display: block; height: auto; transform-origin: bottom left; }
         .title { text-align: center; font-size: 16px; font-weight: 700; margin: 8px 0 12px 0; }
         .meta { width: 100%; border-collapse: collapse; margin-top: 6px; }
         .meta td { border: 0; padding: 0; vertical-align: top; }
@@ -107,7 +108,9 @@
     </div>
 
     @if (!empty($settings['invoice_footer_image_path']))
-        <img class="footer" src="{{ public_path('storage/' . $settings['invoice_footer_image_path']) }}" style="width: {{ (float) ($settings['invoice_footer_image_width'] ?? 100) }}%; transform: scaleY({{ ((float) ($settings['invoice_footer_image_height'] ?? 100)) / 100 }});" alt="Footer">
+        <div class="footer">
+            <img src="{{ public_path('storage/' . $settings['invoice_footer_image_path']) }}" style="width: {{ (float) ($settings['invoice_footer_image_width'] ?? 100) }}%; transform: scaleY({{ ((float) ($settings['invoice_footer_image_height'] ?? 100)) / 100 }});" alt="Footer">
+        </div>
     @endif
 </div>
 </body>

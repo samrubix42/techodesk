@@ -22,6 +22,10 @@ new class extends Component
     public string $status = 'unpaid';
     public string $invoiceDate = '';
     public bool $confirmOpen = false;
+    public string $copyInvoiceType = 'all';
+    public string $copyInvoiceSearch = '';
+    public bool $copyPreviewOpen = false;
+    public ?array $copyPreviewInvoice = null;
 
     public ?string $headerImagePath = null;
     public ?float $headerWidth = null;
@@ -137,9 +141,63 @@ new class extends Component
         return Service::orderBy('name')->get();
     }
 
+    public function getCopySourceInvoicesProperty(): array
+    {
+        if (!$this->selectedClientId) {
+            return [];
+        }
+
+        $sources = collect();
+
+        if (in_array($this->copyInvoiceType, ['all', 'proforma'], true)) {
+            $sources = $sources->merge(
+                ProformaInvoice::with(['client', 'serviceAndPrices'])
+                    ->where('client_id', $this->selectedClientId)
+                    ->when($this->copyInvoiceSearch !== '', function ($query) {
+                        $search = '%' . trim($this->copyInvoiceSearch) . '%';
+                        $query->where(function ($inner) use ($search) {
+                            $inner->where('invoice_number', 'like', $search)
+                                ->orWhereHas('serviceAndPrices', fn ($items) => $items->where('service_details', 'like', $search));
+                        });
+                    })
+                    ->latest()
+                    ->limit(8)
+                    ->get()
+                    ->map(fn (ProformaInvoice $invoice) => $this->formatCopySource($invoice, 'proforma'))
+            );
+        }
+
+        if (in_array($this->copyInvoiceType, ['all', 'general'], true)) {
+            $sources = $sources->merge(
+                GeneralInvoice::with(['client', 'serviceAndPrices'])
+                    ->where('client_id', $this->selectedClientId)
+                    ->when($this->copyInvoiceSearch !== '', function ($query) {
+                        $search = '%' . trim($this->copyInvoiceSearch) . '%';
+                        $query->where(function ($inner) use ($search) {
+                            $inner->where('invoice_number', 'like', $search)
+                                ->orWhereHas('serviceAndPrices', fn ($items) => $items->where('service_details', 'like', $search));
+                        });
+                    })
+                    ->latest()
+                    ->limit(8)
+                    ->get()
+                    ->map(fn (GeneralInvoice $invoice) => $this->formatCopySource($invoice, 'general'))
+            );
+        }
+
+        return $sources
+            ->sortByDesc('created_at')
+            ->take(10)
+            ->values()
+            ->all();
+    }
+
     public function selectClient(int $clientId): void
     {
         $this->selectedClientId = $clientId;
+        $this->copyInvoiceSearch = '';
+        $this->copyPreviewInvoice = null;
+        $this->copyPreviewOpen = false;
     }
 
     public function nextStep(): void
@@ -245,6 +303,49 @@ new class extends Component
         $this->invoiceItems[] = ['service_details' => '', 'price' => null];
     }
 
+    public function previewCopyInvoice(string $type, int $invoiceId): void
+    {
+        $invoice = $this->findCopyInvoice($type, $invoiceId);
+
+        if (!$invoice) {
+            $this->dispatch('toast', message: 'Invoice not found for this client.', type: 'error');
+            return;
+        }
+
+        $this->copyPreviewInvoice = $this->formatCopySource($invoice, $type, true);
+        $this->copyPreviewOpen = true;
+    }
+
+    public function closeCopyPreview(): void
+    {
+        $this->copyPreviewOpen = false;
+    }
+
+    public function copyFromInvoice(string $type, int $invoiceId): void
+    {
+        $invoice = $this->findCopyInvoice($type, $invoiceId);
+
+        if (!$invoice) {
+            $this->dispatch('toast', message: 'Invoice not found for this client.', type: 'error');
+            return;
+        }
+
+        $items = $invoice->serviceAndPrices
+            ->map(fn (InvoiceServiceAndPrice $item) => [
+                'service_details' => (string) $item->service_details,
+                'price' => (float) $item->price,
+            ])
+            ->values()
+            ->all();
+
+        $this->selectedServiceId = $invoice->service_id;
+        $this->status = $invoice->status ?: 'unpaid';
+        $this->invoiceItems = $items !== [] ? $items : [['service_details' => '', 'price' => null]];
+        $this->copyPreviewOpen = false;
+
+        $this->dispatch('toast', message: 'Invoice details copied. Client, date, and new invoice number were kept.', type: 'success');
+    }
+
     public function removeItem(int $index): void
     {
         if (count($this->invoiceItems) === 1) {
@@ -346,6 +447,44 @@ new class extends Component
         }
 
         return $base . str_pad((string) $next, 3, '0', STR_PAD_LEFT);
+    }
+
+    private function findCopyInvoice(string $type, int $invoiceId): GeneralInvoice|ProformaInvoice|null
+    {
+        if (!in_array($type, ['proforma', 'general'], true) || !$this->selectedClientId) {
+            return null;
+        }
+
+        $model = $type === 'general' ? GeneralInvoice::class : ProformaInvoice::class;
+
+        return $model::with(['client', 'serviceAndPrices'])
+            ->where('client_id', $this->selectedClientId)
+            ->find($invoiceId);
+    }
+
+    private function formatCopySource(GeneralInvoice|ProformaInvoice $invoice, string $type, bool $withItems = false): array
+    {
+        $items = $invoice->serviceAndPrices
+            ->map(fn (InvoiceServiceAndPrice $item) => [
+                'service_details' => (string) $item->service_details,
+                'price' => (float) $item->price,
+            ])
+            ->values()
+            ->all();
+
+        return [
+            'id' => $invoice->id,
+            'type' => $type,
+            'type_label' => $type === 'general' ? 'Tax Invoice' : 'Proforma Invoice',
+            'invoice_number' => $invoice->invoice_number,
+            'invoice_date' => $invoice->invoice_date?->format('d/m/Y') ?? $invoice->created_at?->format('d/m/Y') ?? '-',
+            'client_name' => $invoice->client?->name ?: '-',
+            'status' => strtoupper($invoice->status ?: '-'),
+            'total_price' => (float) $invoice->total_price,
+            'created_at' => $invoice->created_at?->timestamp ?? 0,
+            'item_count' => count($items),
+            'items' => $withItems ? $items : [],
+        ];
     }
 
     private function toNullableFloat(null|string $value): ?float
