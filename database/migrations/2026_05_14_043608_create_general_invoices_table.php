@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('general_invoices', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('client_id')->nullable()->constrained('clients')->nullOnDelete();
+            $table->foreignId('service_id')->nullable()->constrained('services')->nullOnDelete();
             $table->string('invoice_number')->unique();
             $table->string('status')->default('unpaid');
             $table->decimal('total_price', 15, 2)->default(0);

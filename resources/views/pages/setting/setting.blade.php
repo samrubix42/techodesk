@@ -335,6 +335,35 @@
                         </div>
                     </div>
 
+                    <div>
+                        <p class="text-sm font-semibold text-slate-800 dark:text-slate-100">Company Location</p>
+                    </div>
+
+                    <div>
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Company Address</label>
+                        <textarea wire:model.live="companyAddress" rows="2" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100"></textarea>
+                        @error('companyAddress')
+                            <p class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                        <div>
+                            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">State</label>
+                            <input type="text" wire:model.live="companyState" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100">
+                            @error('companyState')
+                                <p class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Country</label>
+                            <input type="text" wire:model.live="companyCountry" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100">
+                            @error('companyCountry')
+                                <p class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
                     <div class="flex flex-wrap items-center gap-2">
                         <button
                             type="button"

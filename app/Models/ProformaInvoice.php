@@ -3,19 +3,26 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProformaInvoice extends Model
 {
     protected $fillable = [
+        'client_id',
+        'service_id',
         'invoice_number',
         'status',
         'total_price',
     ];
 
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(Client::class);
+    }
+
     public function serviceAndPrices(): HasMany
     {
-        return $this->hasMany(InvoiceServiceAndPrice::class, 'invoice_number', 'invoice_number')
-            ->where('is_general_invoice', false);
+        return $this->hasMany(InvoiceServiceAndPrice::class, 'proforma_invoice_id');
     }
 }

@@ -103,13 +103,37 @@
                         </span>
                         Calendar
                     </a>
-                    <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="#">
+                    <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="{{ route('invoiceing.proforma') }}" wire:navigate>
                         <span class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
                             <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
                                 <path stroke-linecap="round" d="M7 7h10M7 12h10M7 17h7" />
                             </svg>
                         </span>
-                        Reports
+                        Invoice
+                    </a>
+                    <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="{{ route('invoiceing.general') }}" wire:navigate>
+                        <span class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
+                                <path stroke-linecap="round" d="M5 6h14M5 12h14M5 18h10" />
+                            </svg>
+                        </span>
+                        General Invoice
+                    </a>
+                    <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="{{ route('invoice-list.proforma') }}" wire:navigate>
+                        <span class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
+                                <path stroke-linecap="round" d="M5 6h14M5 12h14M5 18h10" />
+                            </svg>
+                        </span>
+                        Proforma List
+                    </a>
+                    <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="{{ route('invoice-list.general') }}" wire:navigate>
+                        <span class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
+                                <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h7" />
+                            </svg>
+                        </span>
+                        General List
                     </a>
                 </div>
             </div>

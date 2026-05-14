@@ -25,6 +25,9 @@ new class extends Component
     public ?string $ifscCode = null;
     public ?string $branch = null;
     public ?string $upiId = null;
+    public ?string $companyAddress = null;
+    public ?string $companyState = null;
+    public ?string $companyCountry = null;
     public ?float $igst = null;
     public ?float $cgst = null;
     public ?float $sgst = null;
@@ -50,6 +53,9 @@ new class extends Component
             'bank_ifsc_code',
             'bank_branch',
             'bank_upi_id',
+            'company_address',
+            'company_state',
+            'company_country',
             'tax_igst',
             'tax_cgst',
             'tax_sgst',
@@ -70,6 +76,9 @@ new class extends Component
         $this->ifscCode = $settings['bank_ifsc_code'] ?? null;
         $this->branch = $settings['bank_branch'] ?? null;
         $this->upiId = $settings['bank_upi_id'] ?? null;
+        $this->companyAddress = $settings['company_address'] ?? null;
+        $this->companyState = $settings['company_state'] ?? null;
+        $this->companyCountry = $settings['company_country'] ?? null;
         $this->igst = $this->toNullableFloat($settings['tax_igst'] ?? null);
         $this->cgst = $this->toNullableFloat($settings['tax_cgst'] ?? null);
         $this->sgst = $this->toNullableFloat($settings['tax_sgst'] ?? null);
@@ -178,6 +187,9 @@ new class extends Component
             'ifscCode' => ['nullable', 'string', 'max:255'],
             'branch' => ['nullable', 'string', 'max:255'],
             'upiId' => ['nullable', 'string', 'max:255'],
+            'companyAddress' => ['nullable', 'string', 'max:1000'],
+            'companyState' => ['nullable', 'string', 'max:255'],
+            'companyCountry' => ['nullable', 'string', 'max:255'],
             'igst' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'cgst' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'sgst' => ['nullable', 'numeric', 'min:0', 'max:100'],
@@ -188,6 +200,9 @@ new class extends Component
         $this->putSetting('bank_ifsc_code', $this->nullableTrim($data['ifscCode'] ?? null));
         $this->putSetting('bank_branch', $this->nullableTrim($data['branch'] ?? null));
         $this->putSetting('bank_upi_id', $this->nullableTrim($data['upiId'] ?? null));
+        $this->putSetting('company_address', $this->nullableTrim($data['companyAddress'] ?? null));
+        $this->putSetting('company_state', $this->nullableTrim($data['companyState'] ?? null));
+        $this->putSetting('company_country', $this->nullableTrim($data['companyCountry'] ?? null));
         $this->putSetting('tax_igst', $this->valueOrNull($this->igst));
         $this->putSetting('tax_cgst', $this->valueOrNull($this->cgst));
         $this->putSetting('tax_sgst', $this->valueOrNull($this->sgst));
