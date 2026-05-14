@@ -105,6 +105,11 @@
 
                 <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
                     <div>
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Invoice Date</label>
+                        <input type="date" wire:model.live="invoiceDate" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-800 dark:bg-slate-900/60">
+                        @error('invoiceDate') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
                         <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Status</label>
                         <select wire:model.live="status" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-800 dark:bg-slate-900/60">
                             <option value="unpaid">Unpaid</option>

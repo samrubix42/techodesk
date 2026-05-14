@@ -4,20 +4,20 @@
     <meta charset="utf-8">
     <style>
         @page { margin: 0; size: A4 portrait; }
-        body { margin: 0; background: #fff; color: #111; font-family: DejaVu Sans, Arial, sans-serif; font-size: 11px; line-height: 1.35; }
-        .page { position: relative; min-height: 1122px; padding: 38px 82px 120px 82px; box-sizing: border-box; background: #fff; }
-        .header { display: block; margin: 0 auto 20px auto; height: auto; }
-        .footer { position: absolute; left: 0; bottom: 0; display: block; height: auto; transform-origin: bottom left; }
-        .title { text-align: center; font-size: 15px; font-weight: 700; margin: 10px 0 16px 0; }
+        body { margin: 0; background: #fff; color: #111; font-family: Calibri, DejaVu Sans, Arial, sans-serif; font-size: 12px; line-height: 1.25; }
+        .page { position: relative; padding: 28px 70px 90px 70px; box-sizing: border-box; background: #fff; overflow: hidden; }
+        .header { display: block; margin: 0 auto 14px auto; height: auto; }
+        .footer { position: fixed; left: 0; right: 0; bottom: -1px; display: block; height: auto; transform-origin: bottom left; }
+        .title { text-align: center; font-size: 16px; font-weight: 700; margin: 8px 0 12px 0; }
         .meta { width: 100%; border-collapse: collapse; margin-top: 6px; }
         .meta td { border: 0; padding: 0; vertical-align: top; }
-        .details-title { margin: 18px 0 2px 0; font-weight: 700; }
-        .items { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 10.5px; line-height: 1.2; }
-        .items th, .items td { border: 1px solid #111; padding: 3px 5px; vertical-align: top; }
+        .details-title { margin: 14px 0 2px 0; font-weight: 700; }
+        .items { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 11.5px; line-height: 1.18; }
+        .items th, .items td { border: 1px solid #111; padding: 3px 6px; vertical-align: top; }
         .items th { text-align: left; font-weight: 700; }
         .center { text-align: center; }
-        .note { margin-top: 14px; font-size: 10.5px; }
-        .bank { margin-top: 18px; font-size: 10.5px; line-height: 1.45; }
+        .note { margin-top: 10px; font-size: 11.5px; }
+        .bank { margin-top: 12px; font-size: 11.5px; line-height: 1.32; }
         p { margin: 0; }
     </style>
 </head>
@@ -95,6 +95,9 @@
     </div>
 
     <div class="bank">
+        @if ($dueDate)
+            <p style="margin-bottom:8px;"><strong>Due Date for Payment: {{ $dueDate }}</strong></p>
+        @endif
         <p style="margin-bottom:8px;"><strong>Bank account details for payment:</strong></p>
         <p>Account Holder Name: {{ $settings['bank_account_holder_name'] ?? '-' }}</p>
         <p>Account Number: {{ $settings['bank_account_number'] ?? '-' }}</p>
@@ -104,12 +107,7 @@
     </div>
 
     @if (!empty($settings['invoice_footer_image_path']))
-        <img
-            class="footer"
-            src="{{ public_path('storage/' . $settings['invoice_footer_image_path']) }}"
-            style="width: {{ (float) ($settings['invoice_footer_image_width'] ?? 100) }}%; transform: scaleY({{ ((float) ($settings['invoice_footer_image_height'] ?? 100)) / 100 }});"
-            alt="Footer"
-        >
+        <img class="footer" src="{{ public_path('storage/' . $settings['invoice_footer_image_path']) }}" style="width: {{ (float) ($settings['invoice_footer_image_width'] ?? 100) }}%; transform: scaleY({{ ((float) ($settings['invoice_footer_image_height'] ?? 100)) / 100 }});" alt="Footer">
     @endif
 </div>
 </body>

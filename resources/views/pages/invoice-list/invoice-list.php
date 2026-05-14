@@ -11,7 +11,9 @@ new class extends Component
 
     public function mount(?string $type = null): void
     {
-        $this->type = $type === 'proforma' ? 'proforma' : 'general';
+        $this->type = request()->is('invoice-list/proforma') || $type === 'proforma'
+            ? 'proforma'
+            : 'general';
     }
 
     public function getInvoicesProperty()

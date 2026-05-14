@@ -12,8 +12,14 @@ class GeneralInvoice extends Model
         'client_id',
         'service_id',
         'invoice_number',
+        'invoice_date',
         'status',
         'total_price',
+    ];
+
+    protected $casts = [
+        'invoice_date' => 'date',
+        'total_price' => 'decimal:2',
     ];
 
     public function client(): BelongsTo

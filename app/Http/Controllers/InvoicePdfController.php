@@ -12,6 +12,25 @@ class InvoicePdfController extends Controller
 {
     public function download(string $type, int $invoice)
     {
+        [$path, $fileName] = $this->storePdf($type, $invoice);
+
+        return response()->download($path, $fileName, [
+            'Content-Type' => 'application/pdf',
+        ]);
+    }
+
+    public function preview(string $type, int $invoice)
+    {
+        [$path, $fileName] = $this->storePdf($type, $invoice);
+
+        return response()->file($path, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . $fileName . '"',
+        ]);
+    }
+
+    private function storePdf(string $type, int $invoice): array
+    {
         abort_unless(in_array($type, ['general', 'proforma'], true), 404);
 
         $isGeneral = $type === 'general';
@@ -35,6 +54,7 @@ class InvoicePdfController extends Controller
             'tax_sgst',
             'invoice_proforma_notes',
             'invoice_general_notes',
+            'invoice_proforma_due_days',
             'company_address',
             'company_state',
             'company_country',
@@ -57,7 +77,8 @@ class InvoicePdfController extends Controller
             'taxPercent' => $taxPercent,
             'taxAmount' => $taxAmount,
             'total' => $total,
-            'invoiceDate' => $record->created_at?->format('d/m/Y') ?? now()->format('d/m/Y'),
+            'invoiceDate' => $record->invoice_date?->format('d/m/Y') ?? $record->created_at?->format('d/m/Y') ?? now()->format('d/m/Y'),
+            'dueDate' => $isGeneral ? null : $this->calculateDueDate($record, $settings),
         ])->setPaper('a4', 'portrait');
 
         $fileName = preg_replace('/[^A-Za-z0-9_-]/', '_', $record->invoice_number) . '.pdf';
@@ -68,8 +89,19 @@ class InvoicePdfController extends Controller
         File::ensureDirectoryExists($directory);
         $pdf->save($path);
 
-        return response()->download($path, $fileName, [
-            'Content-Type' => 'application/pdf',
-        ]);
+        return [$path, $fileName];
+    }
+
+    private function calculateDueDate(GeneralInvoice|ProformaInvoice $record, $settings): ?string
+    {
+        $days = $settings['invoice_proforma_due_days'] ?? null;
+
+        if (!is_numeric($days)) {
+            return null;
+        }
+
+        $baseDate = $record->invoice_date ?? $record->created_at ?? now();
+
+        return $baseDate->copy()->addDays((int) $days)->format('d/m/Y');
     }
 }

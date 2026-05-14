@@ -33,6 +33,7 @@ new class extends Component
     public ?float $sgst = null;
     public ?string $proformaNotes = null;
     public ?string $generalNotes = null;
+    public ?int $proformaDueDays = null;
 
     public function mount(): void
     {
@@ -61,6 +62,7 @@ new class extends Component
             'tax_sgst',
             'invoice_proforma_notes',
             'invoice_general_notes',
+            'invoice_proforma_due_days',
         ])->pluck('value', 'key');
 
         $this->headerImagePath = $settings['invoice_header_image_path'] ?? null;
@@ -84,6 +86,7 @@ new class extends Component
         $this->sgst = $this->toNullableFloat($settings['tax_sgst'] ?? null);
         $this->proformaNotes = $settings['invoice_proforma_notes'] ?? '';
         $this->generalNotes = $settings['invoice_general_notes'] ?? '';
+        $this->proformaDueDays = is_numeric($settings['invoice_proforma_due_days'] ?? null) ? (int) $settings['invoice_proforma_due_days'] : null;
     }
 
     public function saveHeader(): void
@@ -193,6 +196,7 @@ new class extends Component
             'igst' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'cgst' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'sgst' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'proformaDueDays' => ['nullable', 'integer', 'min:0', 'max:3650'],
         ]);
 
         $this->putSetting('bank_account_holder_name', $this->nullableTrim($data['accountHolderName'] ?? null));
@@ -206,6 +210,7 @@ new class extends Component
         $this->putSetting('tax_igst', $this->valueOrNull($this->igst));
         $this->putSetting('tax_cgst', $this->valueOrNull($this->cgst));
         $this->putSetting('tax_sgst', $this->valueOrNull($this->sgst));
+        $this->putSetting('invoice_proforma_due_days', $this->proformaDueDays === null ? null : (string) $this->proformaDueDays);
 
         $this->dispatch('toast', message: 'Bank details updated', type: 'success');
     }

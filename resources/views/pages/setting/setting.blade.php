@@ -336,6 +336,14 @@
                     </div>
 
                     <div>
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Proforma Due Days</label>
+                        <input type="number" min="0" max="3650" step="1" wire:model.live="proformaDueDays" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100">
+                        @error('proformaDueDays')
+                            <p class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
                         <p class="text-sm font-semibold text-slate-800 dark:text-slate-100">Company Location</p>
                     </div>
 

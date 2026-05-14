@@ -20,7 +20,7 @@
                         <th class="px-2 py-2">Invoice No</th>
                         <th class="px-2 py-2">Client</th>
                         <th class="px-2 py-2">Total</th>
-                        <th class="px-2 py-2">Download</th>
+                        <th class="px-2 py-2">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -30,9 +30,17 @@
                             <td class="px-2 py-2">{{ $invoice->client?->name ?: '-' }}</td>
                             <td class="px-2 py-2">INR {{ number_format((float) $invoice->total_price, 2) }}</td>
                             <td class="px-2 py-2">
-                                <a href="{{ route('invoice.pdf', ['type' => $this->pdfType, 'invoice' => $invoice->id]) }}" class="inline-flex rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white dark:bg-white dark:text-slate-900">
+                                <div class="flex flex-wrap gap-2">
+                                    <a href="{{ route('invoice.preview', ['type' => $this->pdfType, 'invoice' => $invoice->id]) }}" target="_blank" class="inline-flex rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 dark:border-slate-700 dark:text-slate-200">
+                                        Preview
+                                    </a>
+                                    <a href="{{ $this->type === 'proforma' ? route('invoice.proforma.edit', ['invoice' => $invoice->id]) : route('invoice.tax.edit', ['invoice' => $invoice->id]) }}" class="inline-flex rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 dark:border-slate-700 dark:text-slate-200">
+                                        Edit
+                                    </a>
+                                    <a href="{{ route('invoice.pdf', ['type' => $this->pdfType, 'invoice' => $invoice->id]) }}" class="inline-flex rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white dark:bg-white dark:text-slate-900">
                                     PDF
-                                </a>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     @empty

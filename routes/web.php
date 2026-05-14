@@ -13,5 +13,8 @@ Route::livewire('/invoiceing/general', 'pages::invoiceing', ['type' => 'general'
 Route::livewire('/invoice-list', 'pages::invoice-list')->name('invoice-list');
 Route::livewire('/invoice-list/proforma', 'pages::invoice-list', ['type' => 'proforma'])->name('invoice-list.proforma');
 Route::livewire('/invoice-list/general', 'pages::invoice-list', ['type' => 'general'])->name('invoice-list.general');
+Route::livewire('/edit-proforma-invoice/{invoice}', 'pages::edit-proforma-invoice')->name('invoice.proforma.edit');
+Route::livewire('/edit-tax-invoice/{invoice}', 'pages::edit-tax-invoice')->name('invoice.tax.edit');
 
 Route::get('/invoice-pdf/{type}/{invoice}', [InvoicePdfController::class, 'download'])->name('invoice.pdf');
+Route::get('/invoice-preview/{type}/{invoice}', [InvoicePdfController::class, 'preview'])->name('invoice.preview');

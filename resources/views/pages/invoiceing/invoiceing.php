@@ -20,6 +20,7 @@ new class extends Component
     public ?int $selectedServiceId = null;
     public array $invoiceItems = [];
     public string $status = 'unpaid';
+    public string $invoiceDate = '';
     public bool $confirmOpen = false;
 
     public ?string $headerImagePath = null;
@@ -39,6 +40,7 @@ new class extends Component
     public ?float $sgst = null;
     public ?string $proformaNotes = null;
     public ?string $generalNotes = null;
+    public ?int $proformaDueDays = null;
     public ?string $companyAddress = null;
     public ?string $companyState = null;
     public ?string $companyCountry = null;
@@ -53,6 +55,7 @@ new class extends Component
         $this->invoiceItems = [
             ['service_details' => '', 'price' => null],
         ];
+        $this->invoiceDate = Carbon::now()->format('Y-m-d');
         $this->loadSettings();
     }
 
@@ -75,6 +78,7 @@ new class extends Component
             'tax_sgst',
             'invoice_proforma_notes',
             'invoice_general_notes',
+            'invoice_proforma_due_days',
             'company_address',
             'company_state',
             'company_country',
@@ -98,6 +102,7 @@ new class extends Component
         $this->sgst = $this->toNullableFloat($settings['tax_sgst'] ?? null);
         $this->proformaNotes = $settings['invoice_proforma_notes'] ?? '';
         $this->generalNotes = $settings['invoice_general_notes'] ?? '';
+        $this->proformaDueDays = is_numeric($settings['invoice_proforma_due_days'] ?? null) ? (int) $settings['invoice_proforma_due_days'] : null;
         $this->companyAddress = $settings['company_address'] ?? null;
         $this->companyState = $settings['company_state'] ?? null;
         $this->companyCountry = $settings['company_country'] ?? null;
@@ -166,6 +171,7 @@ new class extends Component
             'invoiceItems.*.price' => ['required', 'numeric', 'min:0.01'],
             'selectedServiceId' => ['nullable', 'exists:services,id'],
             'status' => ['required', 'in:unpaid,paid'],
+            'invoiceDate' => ['required', 'date'],
         ]);
 
         $this->confirmOpen = true;
@@ -225,6 +231,15 @@ new class extends Component
             : (string) $this->generalNotes;
     }
 
+    public function getPreviewDueDateProperty(): ?string
+    {
+        if ($this->invoiceType !== 'proforma' || $this->proformaDueDays === null || $this->invoiceDate === '') {
+            return null;
+        }
+
+        return Carbon::parse($this->invoiceDate)->addDays($this->proformaDueDays)->format('d/m/Y');
+    }
+
     public function addItem(): void
     {
         $this->invoiceItems[] = ['service_details' => '', 'price' => null];
@@ -263,6 +278,7 @@ new class extends Component
                 'client_id' => $this->selectedClientId,
                 'service_id' => $this->selectedServiceId,
                 'invoice_number' => $invoiceNumber,
+                'invoice_date' => $this->invoiceDate,
                 'status' => $this->status,
                 'total_price' => $this->totalAmount,
             ];
@@ -286,6 +302,7 @@ new class extends Component
         $this->confirmOpen = false;
         $this->invoiceItems = [['service_details' => '', 'price' => null]];
         $this->selectedServiceId = null;
+        $this->invoiceDate = Carbon::now()->format('Y-m-d');
         $this->step = 1;
 
         $this->dispatch('toast', message: 'Invoice created: ' . $invoiceNumber, type: 'success');

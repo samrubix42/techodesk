@@ -3,7 +3,7 @@
         <div x-show="open" style="position:fixed; inset:0; z-index:120; display:grid; place-items:center; padding:16px;">
             <div @click="open = false" style="position:absolute; inset:0; background:rgba(15,23,42,0.65);"></div>
             <div x-show="open" style="position:relative; width:100%; max-width:900px; max-height:94vh; overflow:auto; background:#ffffff; border-radius:8px; padding:16px; box-shadow:0 20px 45px rgba(0,0,0,.35);">
-                <div style="width:794px; min-height:1123px; margin:0 auto; background:#ffffff; padding:38px 82px 120px 82px; box-sizing:border-box; color:#111; font-family:Arial, Helvetica, sans-serif; font-size:12px; line-height:1.35; position:relative;">
+                <div style="width:794px; min-height:1123px; margin:0 auto; background:#ffffff; padding:34px 82px 92px 82px; box-sizing:border-box; color:#111; font-family:Calibri, Arial, Helvetica, sans-serif; font-size:11px; line-height:1.28; position:relative;">
                     @if ($headerImagePath)
                         <img src="{{ asset('storage/' . $headerImagePath) }}" alt="Header" style="display:block; width:{{ $headerWidth ?? 100 }}%; height:auto; transform:scaleY({{ ($headerHeight ?? 100) / 100 }}); transform-origin:top left; margin:0 auto 20px auto;">
                     @endif
@@ -27,7 +27,7 @@
                             @endif
                         </div>
                         <div style="text-align:left;">
-                            <p style="margin:0;"><strong>Date:</strong>&nbsp; {{ now()->format('d/m/Y') }}</p>
+                            <p style="margin:0;"><strong>Date:</strong>&nbsp; {{ \Illuminate\Support\Carbon::parse($invoiceDate)->format('d/m/Y') }}</p>
                         </div>
                     </div>
 
@@ -74,6 +74,9 @@
 
                     @if ($invoiceType === 'proforma')
                         <div style="margin-top:18px; font-size:11px; line-height:1.45;">
+                            @if ($this->previewDueDate)
+                                <p style="margin:0 0 10px 0; font-weight:700;">Due Date for Payment: {{ $this->previewDueDate }}</p>
+                            @endif
                             <p style="margin:0 0 8px 0; font-weight:700;">Bank account details for payment:</p>
                             <p style="margin:0;">Account Holder Name: {{ $accountHolderName ?: '-' }}</p>
                             <p style="margin:0;">Account Number: {{ $accountNumber ?: '-' }}</p>
