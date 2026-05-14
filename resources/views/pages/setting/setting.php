@@ -20,6 +20,16 @@ new class extends Component
     public ?float $footerWidth = null;
     public ?float $footerHeight = null;
     public ?string $deleteTarget = null;
+    public ?string $accountHolderName = null;
+    public ?string $accountNumber = null;
+    public ?string $ifscCode = null;
+    public ?string $branch = null;
+    public ?string $upiId = null;
+    public ?float $igst = null;
+    public ?float $cgst = null;
+    public ?float $sgst = null;
+    public ?string $proformaNotes = null;
+    public ?string $generalNotes = null;
 
     public function mount(): void
     {
@@ -35,6 +45,16 @@ new class extends Component
             'invoice_footer_image_path',
             'invoice_footer_image_width',
             'invoice_footer_image_height',
+            'bank_account_holder_name',
+            'bank_account_number',
+            'bank_ifsc_code',
+            'bank_branch',
+            'bank_upi_id',
+            'tax_igst',
+            'tax_cgst',
+            'tax_sgst',
+            'invoice_proforma_notes',
+            'invoice_general_notes',
         ])->pluck('value', 'key');
 
         $this->headerImagePath = $settings['invoice_header_image_path'] ?? null;
@@ -44,6 +64,17 @@ new class extends Component
         $this->footerImagePath = $settings['invoice_footer_image_path'] ?? null;
         $this->footerWidth = $this->toNullableFloat($settings['invoice_footer_image_width'] ?? null);
         $this->footerHeight = $this->toNullableFloat($settings['invoice_footer_image_height'] ?? null);
+
+        $this->accountHolderName = $settings['bank_account_holder_name'] ?? null;
+        $this->accountNumber = $settings['bank_account_number'] ?? null;
+        $this->ifscCode = $settings['bank_ifsc_code'] ?? null;
+        $this->branch = $settings['bank_branch'] ?? null;
+        $this->upiId = $settings['bank_upi_id'] ?? null;
+        $this->igst = $this->toNullableFloat($settings['tax_igst'] ?? null);
+        $this->cgst = $this->toNullableFloat($settings['tax_cgst'] ?? null);
+        $this->sgst = $this->toNullableFloat($settings['tax_sgst'] ?? null);
+        $this->proformaNotes = $settings['invoice_proforma_notes'] ?? '';
+        $this->generalNotes = $settings['invoice_general_notes'] ?? '';
     }
 
     public function saveHeader(): void
@@ -139,6 +170,44 @@ new class extends Component
         $this->dispatch('close-setting-delete-modal');
     }
 
+    public function saveBankDetails(): void
+    {
+        $data = $this->validate([
+            'accountHolderName' => ['nullable', 'string', 'max:255'],
+            'accountNumber' => ['nullable', 'string', 'max:255'],
+            'ifscCode' => ['nullable', 'string', 'max:255'],
+            'branch' => ['nullable', 'string', 'max:255'],
+            'upiId' => ['nullable', 'string', 'max:255'],
+            'igst' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'cgst' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'sgst' => ['nullable', 'numeric', 'min:0', 'max:100'],
+        ]);
+
+        $this->putSetting('bank_account_holder_name', $this->nullableTrim($data['accountHolderName'] ?? null));
+        $this->putSetting('bank_account_number', $this->nullableTrim($data['accountNumber'] ?? null));
+        $this->putSetting('bank_ifsc_code', $this->nullableTrim($data['ifscCode'] ?? null));
+        $this->putSetting('bank_branch', $this->nullableTrim($data['branch'] ?? null));
+        $this->putSetting('bank_upi_id', $this->nullableTrim($data['upiId'] ?? null));
+        $this->putSetting('tax_igst', $this->valueOrNull($this->igst));
+        $this->putSetting('tax_cgst', $this->valueOrNull($this->cgst));
+        $this->putSetting('tax_sgst', $this->valueOrNull($this->sgst));
+
+        $this->dispatch('toast', message: 'Bank details updated', type: 'success');
+    }
+
+    public function saveNotes(): void
+    {
+        $data = $this->validate([
+            'proformaNotes' => ['nullable', 'string'],
+            'generalNotes' => ['nullable', 'string'],
+        ]);
+
+        $this->putSetting('invoice_proforma_notes', $this->nullableTrim($data['proformaNotes'] ?? null));
+        $this->putSetting('invoice_general_notes', $this->nullableTrim($data['generalNotes'] ?? null));
+
+        $this->dispatch('toast', message: 'Invoice notes updated', type: 'success');
+    }
+
     private function putSetting(string $key, ?string $value): void
     {
         Setting::updateOrCreate(
@@ -162,5 +231,16 @@ new class extends Component
     private function toNullableFloat(?string $value): ?float
     {
         return is_numeric($value) ? (float) $value : null;
+    }
+
+    private function nullableTrim(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $trimmed = trim($value);
+
+        return $trimmed === '' ? null : $trimmed;
     }
 };

@@ -7,6 +7,8 @@
         <title>{{ $title ?? config('app.name') }}</title>
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        <script src="{{ asset('tinymce/tinymce.min.js') }}"></script>
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css">
 

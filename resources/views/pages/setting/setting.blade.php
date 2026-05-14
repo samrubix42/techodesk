@@ -223,6 +223,193 @@
                 </div>
             </div>
         </section>
+
+        <section class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+            <div class="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-slate-100 blur-3xl dark:bg-slate-800/40"></div>
+            <div class="relative">
+                <div class="flex items-center justify-between gap-2">
+                    <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Bank Card & Details</h2>
+                    <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:bg-slate-900 dark:text-slate-300">Text</span>
+                </div>
+
+                <div class="mt-4 space-y-4">
+                    <div class="rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-5 text-white shadow-lg ring-1 ring-white/10">
+                        <div class="flex items-center justify-between">
+                            <p class="text-xs uppercase tracking-[0.16em] text-slate-300">Bank Details</p>
+                            <p class="text-xs font-medium text-emerald-300">Primary Account</p>
+                        </div>
+                        <p class="mt-4 text-lg font-semibold">{{ $accountHolderName ?: 'Account Holder Name' }}</p>
+                        <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <p class="text-[11px] uppercase tracking-[0.12em] text-slate-400">Account No.</p>
+                                <p class="mt-1 font-medium">{{ $accountNumber ?: '-' }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[11px] uppercase tracking-[0.12em] text-slate-400">IFSC</p>
+                                <p class="mt-1 font-medium">{{ $ifscCode ?: '-' }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[11px] uppercase tracking-[0.12em] text-slate-400">UPI ID</p>
+                                <p class="mt-1 font-medium break-all">{{ $upiId ?: '-' }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[11px] uppercase tracking-[0.12em] text-slate-400">Branch</p>
+                                <p class="mt-1 font-medium">{{ $branch ?: '-' }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="text-sm font-semibold text-slate-800 dark:text-slate-100">Bank Details</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                        <div>
+                            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Account Holder Name</label>
+                            <input type="text" wire:model.live="accountHolderName" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100">
+                            @error('accountHolderName')
+                                <p class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Account Number</label>
+                            <input type="text" wire:model.live="accountNumber" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100">
+                            @error('accountNumber')
+                                <p class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">IFSC Code</label>
+                            <input type="text" wire:model.live="ifscCode" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100">
+                            @error('ifscCode')
+                                <p class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">UPI ID</label>
+                            <input type="text" wire:model.live="upiId" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100">
+                            @error('upiId')
+                                <p class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Branch</label>
+                        <input type="text" wire:model.live="branch" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100">
+                        @error('branch')
+                            <p class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <p class="text-sm font-semibold text-slate-800 dark:text-slate-100">Tax Rates (%)</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
+                        <div>
+                            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">IGST (%)</label>
+                            <input type="number" min="0" max="100" step="0.01" wire:model.live="igst" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100">
+                            @error('igst')
+                                <p class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">CGST (%)</label>
+                            <input type="number" min="0" max="100" step="0.01" wire:model.live="cgst" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100">
+                            @error('cgst')
+                                <p class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">SGST (%)</label>
+                            <input type="number" min="0" max="100" step="0.01" wire:model.live="sgst" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-100">
+                            @error('sgst')
+                                <p class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button
+                            type="button"
+                            @click="$dispatch('open-bank-save-confirm-modal')"
+                            class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                        >
+                            Save Bank Details
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+            <div class="pointer-events-none absolute -left-10 -top-10 h-32 w-32 rounded-full bg-slate-100 blur-3xl dark:bg-slate-800/40"></div>
+            <div class="relative">
+                <div class="flex items-center justify-between gap-2">
+                    <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Invoice Notes</h2>
+                    <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:bg-slate-900 dark:text-slate-300">Editor</span>
+                </div>
+
+                <div class="mt-4 space-y-4">
+                    <div>
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Proforma Invoice Notes</label>
+                        <div wire:ignore class="mt-2 rounded-xl border border-slate-300 bg-white p-2 dark:border-slate-800 dark:bg-slate-900/60">
+                            <textarea id="proforma-notes-editor" class="min-h-[180px] w-full rounded-lg bg-white p-2 text-sm text-slate-700 dark:bg-slate-900 dark:text-slate-100">{{ $proformaNotes }}</textarea>
+                        </div>
+                        @error('proformaNotes')
+                            <p class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">General Invoice Notes</label>
+                        <div wire:ignore class="mt-2 rounded-xl border border-slate-300 bg-white p-2 dark:border-slate-800 dark:bg-slate-900/60">
+                            <textarea id="general-notes-editor" class="min-h-[180px] w-full rounded-lg bg-white p-2 text-sm text-slate-700 dark:bg-slate-900 dark:text-slate-100">{{ $generalNotes }}</textarea>
+                        </div>
+                        @error('generalNotes')
+                            <p class="mt-1 text-xs text-rose-600 dark:text-rose-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button
+                            type="button"
+                            wire:click="saveNotes"
+                            class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                        >
+                            Save Notes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div x-data="{ bankSaveConfirmOpen: false }" x-on:open-bank-save-confirm-modal.window="bankSaveConfirmOpen = true" x-on:close-bank-save-confirm-modal.window="bankSaveConfirmOpen = false" x-cloak>
+        <template x-teleport="body">
+            <div x-show="bankSaveConfirmOpen" class="fixed inset-0 z-95 flex items-center justify-center px-4">
+                <div @click="bankSaveConfirmOpen = false" class="absolute inset-0 bg-slate-900/50"></div>
+
+                <div x-show="bankSaveConfirmOpen" x-transition x-trap.inert.noscroll="bankSaveConfirmOpen" class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-950">
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Save Bank Details</h3>
+                    <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                        Please confirm you want to save the updated bank details for invoices.
+                    </p>
+
+                    <div class="mt-6 flex justify-end gap-3">
+                        <button @click="bankSaveConfirmOpen = false" class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-900">Cancel</button>
+                        <button wire:click="saveBankDetails" @click="bankSaveConfirmOpen = false" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900">Confirm Save</button>
+                    </div>
+                </div>
+            </div>
+        </template>
     </div>
 
     <div x-data="{ deleteOpen: false }" x-on:open-setting-delete-modal.window="deleteOpen = true" x-on:close-setting-delete-modal.window="deleteOpen = false" x-cloak>
@@ -249,3 +436,55 @@
         </template>
     </div>
 </div>
+
+@script
+<script>
+    const tinyBaseUrl = "{{ asset('tinymce') }}";
+
+    const initTinyEditor = (id, livewireField) => {
+        const el = document.getElementById(id);
+        if (!el) {
+            return;
+        }
+
+        const existing = tinymce.get(id);
+        if (existing) {
+            existing.remove();
+        }
+
+        tinymce.init({
+            target: el,
+            base_url: tinyBaseUrl,
+            suffix: '.min',
+            height: 260,
+            menubar: false,
+            promotion: false,
+            plugins: 'lists link table code',
+            toolbar: 'undo redo | bold italic underline | bullist numlist | alignleft aligncenter alignright | link table | code',
+            setup: (editor) => {
+                editor.on('init', () => {
+                    $wire.set(livewireField, editor.getContent());
+                });
+
+                editor.on('change keyup', () => {
+                    $wire.set(livewireField, editor.getContent());
+                });
+            }
+        });
+    };
+
+    const bootEditors = () => {
+        if (typeof tinymce === 'undefined') {
+            return;
+        }
+
+        initTinyEditor('proforma-notes-editor', 'proformaNotes');
+        initTinyEditor('general-notes-editor', 'generalNotes');
+    };
+
+    bootEditors();
+    document.addEventListener('livewire:initialized', bootEditors);
+    document.addEventListener('livewire:load', bootEditors);
+    document.addEventListener('livewire:navigated', bootEditors);
+</script>
+@endscript
