@@ -8,29 +8,30 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class InvoiceServiceAndPrice extends Model
 {
     protected $fillable = [
-        'proforma_invoice_id',
-        'general_invoice_id',
+        'invoice_id',
         'service_details',
         'invoice_number',
         'price',
+        'is_general_invoice',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
+        'is_general_invoice' => 'boolean',
     ];
 
     public function generalInvoice(): BelongsTo
     {
-        return $this->belongsTo(GeneralInvoice::class, 'general_invoice_id');
+        return $this->belongsTo(GeneralInvoice::class, 'invoice_id');
     }
 
     public function proformaInvoice(): BelongsTo
     {
-        return $this->belongsTo(ProformaInvoice::class, 'proforma_invoice_id');
+        return $this->belongsTo(ProformaInvoice::class, 'invoice_id');
     }
 
     public function getInvoiceAttribute(): GeneralInvoice|ProformaInvoice|null
     {
-        return $this->generalInvoice ?: $this->proformaInvoice;
+        return $this->is_general_invoice ? $this->generalInvoice : $this->proformaInvoice;
     }
 }

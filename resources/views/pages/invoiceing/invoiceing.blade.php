@@ -23,12 +23,12 @@
                     <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Invoice Type</label>
                     @if ($invoiceTypeLocked)
                         <div class="mt-2 inline-flex rounded-full bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white dark:bg-white dark:text-slate-900">
-                            {{ $invoiceType === 'general' ? 'General Invoice' : 'Proforma Invoice' }}
+                            {{ $invoiceType === 'general' ? 'Tax Invoice' : 'Proforma Invoice' }}
                         </div>
                     @else
                         <select wire:model.live="invoiceType" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-800 dark:bg-slate-900/60">
                             <option value="proforma">Proforma Invoice</option>
-                            <option value="general">General Invoice</option>
+                            <option value="general">Tax Invoice</option>
                         </select>
                     @endif
                     @error('invoiceType') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
@@ -61,7 +61,7 @@
             <div class="space-y-4">
                 <div class="rounded-xl border border-slate-200 bg-gradient-to-r from-slate-50 to-white p-4 text-sm dark:border-slate-800 dark:from-slate-900 dark:to-slate-950">
                     <p><span class="font-medium">Client:</span> {{ $this->selectedClient?->name }}</p>
-                    <p><span class="font-medium">Invoice Type:</span> {{ $invoiceType === 'general' ? 'General Invoice' : 'Proforma Invoice' }}</p>
+                    <p><span class="font-medium">Invoice Type:</span> {{ $invoiceType === 'general' ? 'Tax Invoice' : 'Proforma Invoice' }}</p>
                     <p><span class="font-medium">Preview Invoice No:</span> {{ $this->previewInvoiceNumber }}</p>
                 </div>
 
@@ -129,16 +129,3 @@
 
     @include('pages.invoiceing.confirm-modal')
 </div>
-
-@script
-<script>
-    document.addEventListener('livewire:init', () => {
-        Livewire.on('invoice-pdf-download', (event) => {
-            const payload = Array.isArray(event) ? event[0] : event;
-            if (payload?.url) {
-                window.open(payload.url, '_blank');
-            }
-        });
-    });
-</script>
-@endscript

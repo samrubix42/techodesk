@@ -398,7 +398,7 @@
                     </div>
 
                     <div>
-                        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">General Invoice Notes</label>
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Tax Invoice Notes</label>
                         <div wire:ignore class="mt-2 rounded-xl border border-slate-300 bg-white p-2 dark:border-slate-800 dark:bg-slate-900/60">
                             <textarea id="general-notes-editor" class="min-h-[180px] w-full rounded-lg bg-white p-2 text-sm text-slate-700 dark:bg-slate-900 dark:text-slate-100">{{ $generalNotes }}</textarea>
                         </div>

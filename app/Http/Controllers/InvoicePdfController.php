@@ -6,15 +6,17 @@ use App\Models\GeneralInvoice;
 use App\Models\ProformaInvoice;
 use App\Models\Setting;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\File;
 
 class InvoicePdfController extends Controller
 {
-    public function download(string $type, int $invoice): Response
+    public function download(string $type, int $invoice)
     {
+        abort_unless(in_array($type, ['general', 'proforma'], true), 404);
+
         $isGeneral = $type === 'general';
         $model = $isGeneral ? GeneralInvoice::class : ProformaInvoice::class;
-        $record = $model::with(['client', 'serviceAndPrices'])->findOrFail($invoice);
+        $record = $model::with(['client', 'service', 'serviceAndPrices'])->findOrFail($invoice);
 
         $settings = Setting::whereIn('key', [
             'invoice_header_image_path',
@@ -55,8 +57,19 @@ class InvoicePdfController extends Controller
             'taxPercent' => $taxPercent,
             'taxAmount' => $taxAmount,
             'total' => $total,
-        ])->setPaper('a4');
+            'invoiceDate' => $record->created_at?->format('d/m/Y') ?? now()->format('d/m/Y'),
+        ])->setPaper('a4', 'portrait');
 
-        return $pdf->download($record->invoice_number . '.pdf');
+        $fileName = preg_replace('/[^A-Za-z0-9_-]/', '_', $record->invoice_number) . '.pdf';
+        $folder = $isGeneral ? 'tax' : 'proforma';
+        $directory = storage_path('app/public/invoices/' . $folder);
+        $path = $directory . DIRECTORY_SEPARATOR . $fileName;
+
+        File::ensureDirectoryExists($directory);
+        $pdf->save($path);
+
+        return response()->download($path, $fileName, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 }

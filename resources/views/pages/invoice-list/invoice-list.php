@@ -1,14 +1,24 @@
 <?php
 
 use App\Models\GeneralInvoice;
+use App\Models\ProformaInvoice;
 use Livewire\Component;
 
 new class extends Component
 {
     public string $search = '';
-    public function getGeneralInvoicesProperty()
+    public string $type = 'general';
+
+    public function mount(?string $type = null): void
     {
-        return GeneralInvoice::with('client')
+        $this->type = $type === 'proforma' ? 'proforma' : 'general';
+    }
+
+    public function getInvoicesProperty()
+    {
+        $model = $this->type === 'proforma' ? ProformaInvoice::class : GeneralInvoice::class;
+
+        return $model::with('client')
             ->when($this->search !== '', function ($query) {
                 $query->where('invoice_number', 'like', '%' . trim($this->search) . '%')
                     ->orWhereHas('client', function ($clientQuery) {
@@ -22,6 +32,16 @@ new class extends Component
 
     public function getPageTitleProperty(): string
     {
-        return 'General Invoice List';
+        return $this->type === 'proforma' ? 'Proforma Invoice List' : 'Tax Invoice List';
+    }
+
+    public function getTypeLabelProperty(): string
+    {
+        return $this->type === 'proforma' ? 'Proforma' : 'Tax';
+    }
+
+    public function getPdfTypeProperty(): string
+    {
+        return $this->type === 'proforma' ? 'proforma' : 'general';
     }
 };

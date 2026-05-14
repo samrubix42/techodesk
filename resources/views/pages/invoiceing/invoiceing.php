@@ -245,12 +245,12 @@ new class extends Component
         $this->persistInvoice(false);
     }
 
-    public function saveInvoiceAndDownload(): void
+    public function saveInvoiceAndDownload()
     {
-        $this->persistInvoice(true);
+        return $this->persistInvoice(true);
     }
 
-    private function persistInvoice(bool $downloadPdf): void
+    private function persistInvoice(bool $downloadPdf)
     {
         $this->openConfirm();
 
@@ -274,11 +274,11 @@ new class extends Component
 
             foreach ($this->invoiceItems as $item) {
                 InvoiceServiceAndPrice::create([
-                    'general_invoice_id' => $isGeneral ? $invoice->id : null,
-                    'proforma_invoice_id' => $isGeneral ? null : $invoice->id,
+                    'invoice_id' => $invoice->id,
                     'service_details' => $item['service_details'],
                     'invoice_number' => $invoiceNumber,
                     'price' => (float) $item['price'],
+                    'is_general_invoice' => $isGeneral,
                 ]);
             }
         });
@@ -291,11 +291,13 @@ new class extends Component
         $this->dispatch('toast', message: 'Invoice created: ' . $invoiceNumber, type: 'success');
 
         if ($downloadPdf && $createdInvoiceId) {
-            $this->dispatch(
-                'invoice-pdf-download',
-                url: route('invoice.pdf', ['type' => $isGeneral ? 'general' : 'proforma', 'invoice' => $createdInvoiceId])
-            );
+            return redirect()->route('invoice.pdf', [
+                'type' => $isGeneral ? 'general' : 'proforma',
+                'invoice' => $createdInvoiceId,
+            ]);
         }
+
+        return null;
     }
 
     private function generateUniqueInvoiceNumber(string $type): string

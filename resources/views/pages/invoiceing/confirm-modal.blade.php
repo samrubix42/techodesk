@@ -2,92 +2,90 @@
     <template x-teleport="body">
         <div x-show="open" style="position:fixed; inset:0; z-index:120; display:grid; place-items:center; padding:16px;">
             <div @click="open = false" style="position:absolute; inset:0; background:rgba(15,23,42,0.65);"></div>
-            <div x-show="open" style="position:relative; width:100%; max-width:860px; max-height:92vh; overflow:auto; background:#f4f4f4; border-radius:10px; padding:18px; box-shadow:0 20px 45px rgba(0,0,0,.35);">
-                <div style="width:794px; min-height:1123px; margin:0 auto; background:#f2f2f2; padding:20px 26px 28px 26px; box-sizing:border-box; border:1px solid #c8c8c8; color:#1b1b1b;">
-                @if ($headerImagePath)
-                    <img src="{{ asset('storage/' . $headerImagePath) }}" alt="Header" style="display:block; width:{{ $headerWidth ?? 100 }}%; transform:scaleY({{ ($headerHeight ?? 100) / 100 }}); transform-origin:top left; margin:0 auto 12px auto;">
-                @endif
+            <div x-show="open" style="position:relative; width:100%; max-width:900px; max-height:94vh; overflow:auto; background:#ffffff; border-radius:8px; padding:16px; box-shadow:0 20px 45px rgba(0,0,0,.35);">
+                <div style="width:794px; min-height:1123px; margin:0 auto; background:#ffffff; padding:38px 82px 120px 82px; box-sizing:border-box; color:#111; font-family:Arial, Helvetica, sans-serif; font-size:12px; line-height:1.35; position:relative;">
+                    @if ($headerImagePath)
+                        <img src="{{ asset('storage/' . $headerImagePath) }}" alt="Header" style="display:block; width:{{ $headerWidth ?? 100 }}%; height:auto; transform:scaleY({{ ($headerHeight ?? 100) / 100 }}); transform-origin:top left; margin:0 auto 20px auto;">
+                    @endif
 
-                <div style="text-align:center;">
-                    <h3 style="font-size:31px; font-weight:700; margin:8px 0 14px 0;">{{ $invoiceType === 'general' ? 'Tax Invoice' : 'Proforma Invoice' }}</h3>
-                </div>
+                    <h3 style="font-size:15px; font-weight:700; text-align:center; margin:10px 0 16px 0;">{{ $invoiceType === 'general' ? 'Tax Invoice' : 'Proforma Invoice' }}</h3>
 
-                <div style="margin-top:8px; display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:14px;">
-                    <div style="line-height:1.45;">
-                        <p style="font-weight:600;">To:</p>
-                        <p>{{ $this->selectedClient?->name }}</p>
-                        <p>{{ $this->selectedClient?->address }}</p>
-                        <p>{{ $this->selectedClient?->city }} {{ $this->selectedClient?->state }}</p>
-                        @if (!empty($this->selectedClient?->gst_number))
-                            <p>GST No.: {{ $this->selectedClient?->gst_number }}</p>
-                        @endif
-                    </div>
-                    <div style="text-align:right; line-height:1.5;">
-                        <p><span style="font-weight:600;">Date:</span> {{ now()->format('d/m/Y') }}</p>
-                        <p><span style="font-weight:600;">Invoice No.:</span> {{ $this->previewInvoiceNumber }}</p>
-                        <p><span style="font-weight:600;">Status:</span> {{ strtoupper($status) }}</p>
-                    </div>
-                </div>
-
-                <div style="margin-top:14px; overflow:hidden; border:1px solid #111;">
-                    <table style="width:100%; border-collapse:collapse; font-size:12.5px; line-height:1.2;">
-                        <thead style="background:#efefef;">
-                            <tr>
-                                <th style="border:1px solid #111; padding:4px; text-align:left;">Sl. No.</th>
-                                <th style="border:1px solid #111; padding:4px; text-align:left;">Service Details</th>
-                                <th style="border:1px solid #111; padding:4px; text-align:left;">Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($invoiceItems as $idx => $item)
-                                <tr>
-                                    <td style="border:1px solid #111; padding:4px;">{{ str_pad((string) ($idx + 1), 2, '0', STR_PAD_LEFT) }}.</td>
-                                    <td style="border:1px solid #111; padding:4px; white-space:pre-line;">{{ $item['service_details'] }}</td>
-                                    <td style="border:1px solid #111; padding:4px;">INR {{ number_format((float) ($item['price'] ?? 0), 2) }}</td>
-                                </tr>
-                            @endforeach
-                            <tr>
-                                <td colspan="2" style="border:1px solid #111; padding:4px; text-align:right;">Total (Excluding GST)</td>
-                                <td style="border:1px solid #111; padding:4px;">INR {{ number_format($this->subTotal, 2) }}</td>
-                            </tr>
-                            @if ($this->taxPercent > 0)
-                                <tr>
-                                    <td colspan="2" style="border:1px solid #111; padding:4px; text-align:right;">{{ $this->taxLabel }}</td>
-                                    <td style="border:1px solid #111; padding:4px;">INR {{ number_format($this->taxAmount, 2) }}</td>
-                                </tr>
+                    <div style="display:grid; grid-template-columns:1fr 170px; gap:18px; margin-top:6px;">
+                        <div>
+                            <p style="margin:0 0 2px 0;">To:</p>
+                            <p style="margin:0;">{{ $this->selectedClient?->name }}</p>
+                            @if ($this->selectedClient?->address)
+                                <p style="margin:0;">{{ $this->selectedClient?->address }}</p>
                             @endif
-                            <tr>
-                                <td colspan="2" style="border:1px solid #111; padding:4px; text-align:right; font-weight:600;">Total {{ $this->taxPercent > 0 ? '(Including GST)' : '' }}</td>
-                                <td style="border:1px solid #111; padding:4px; font-weight:600;">INR {{ number_format($this->totalAmount, 2) }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="prose prose-sm mt-4 max-w-none dark:prose-invert">
-                    {!! $this->currentNotes !!}
-                </div>
-
-                @if ($invoiceType === 'proforma')
-                    <div class="mt-4 text-sm">
-                        <p class="font-medium">Bank account details for payment:</p>
-                        <p>Account Holder Name: {{ $accountHolderName ?: '-' }}</p>
-                        <p>Account Number: {{ $accountNumber ?: '-' }}</p>
-                        <p>IFSC Code: {{ $ifscCode ?: '-' }}</p>
-                        <p>Branch: {{ $branch ?: '-' }}</p>
-                        <p>UPI ID: {{ $upiId ?: '-' }}</p>
+                            <p style="margin:0;">{{ trim(($this->selectedClient?->city ? $this->selectedClient?->city . ', ' : '') . ($this->selectedClient?->state ?? '')) }}</p>
+                            @if (!empty($this->selectedClient?->gst_number))
+                                <p style="margin:8px 0 0 0;">GST No.: {{ $this->selectedClient?->gst_number }}</p>
+                            @endif
+                            <p style="margin:12px 0 0 0;"><strong>Invoice No.:</strong> {{ $this->previewInvoiceNumber }}</p>
+                            @if ($invoiceType === 'proforma')
+                                <p style="margin:8px 0 0 0;"><strong>Status:</strong> {{ strtoupper($status) }}</p>
+                            @endif
+                        </div>
+                        <div style="text-align:left;">
+                            <p style="margin:0;"><strong>Date:</strong>&nbsp; {{ now()->format('d/m/Y') }}</p>
+                        </div>
                     </div>
-                @endif
 
-                <div style="margin-top:10px; font-size:13px;">
-                    <p>Address: {{ $companyAddress ?: '-' }}</p>
-                    <p>State: {{ $companyState ?: '-' }}</p>
-                    <p>Country: {{ $companyCountry ?: '-' }}</p>
-                </div>
+                    <div style="margin-top:18px;">
+                        <p style="margin:0 0 2px 0; font-weight:700;">Product &amp; services details:</p>
+                        <table style="width:100%; border-collapse:collapse; table-layout:fixed; font-size:11px; line-height:1.2;">
+                            <thead>
+                                <tr>
+                                    <th style="width:12%; border:1px solid #111; padding:3px 5px; text-align:left;">Sl. No.</th>
+                                    <th style="width:58%; border:1px solid #111; padding:3px 5px; text-align:left;">Service Details</th>
+                                    <th style="width:30%; border:1px solid #111; padding:3px 5px; text-align:left;">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($invoiceItems as $idx => $item)
+                                    <tr>
+                                        <td style="border:1px solid #111; padding:4px 5px; vertical-align:top;">{{ str_pad((string) ($idx + 1), 2, '0', STR_PAD_LEFT) }}.</td>
+                                        <td style="border:1px solid #111; padding:4px 5px; vertical-align:top; white-space:pre-line;">{{ $item['service_details'] }}</td>
+                                        <td style="border:1px solid #111; padding:4px 5px; vertical-align:top;">INR {{ number_format((float) ($item['price'] ?? 0), 2) }}</td>
+                                    </tr>
+                                @endforeach
+                                <tr>
+                                    <td colspan="2" style="border:1px solid #111; padding:3px 5px; text-align:center;">Total (Excluding GST)</td>
+                                    <td style="border:1px solid #111; padding:3px 5px;">INR {{ number_format($this->subTotal, 2) }}</td>
+                                </tr>
+                                @if ($this->taxPercent > 0)
+                                    <tr>
+                                        <td colspan="2" style="border:1px solid #111; padding:3px 5px; text-align:center;">{{ $this->taxLabel }}</td>
+                                        <td style="border:1px solid #111; padding:3px 5px;">INR {{ number_format($this->taxAmount, 2) }}</td>
+                                    </tr>
+                                @endif
+                                <tr>
+                                    <td colspan="2" style="border:1px solid #111; padding:3px 5px; text-align:center;">Total {{ $this->taxPercent > 0 ? '(Including GST)' : '' }}</td>
+                                    <td style="border:1px solid #111; padding:3px 5px;">INR {{ number_format($this->totalAmount, 2) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-                @if ($footerImagePath)
-                    <img src="{{ asset('storage/' . $footerImagePath) }}" alt="Footer" style="display:block; width:{{ $footerWidth ?? 100 }}%; transform:scaleY({{ ($footerHeight ?? 100) / 100 }}); transform-origin:top left; margin:20px auto 0 auto;">
-                @endif
+                    <div style="margin-top:14px; font-size:11px;">
+                        <p style="margin:0 0 8px 0;">NOTE:</p>
+                        <div>{!! $this->currentNotes !!}</div>
+                    </div>
+
+                    @if ($invoiceType === 'proforma')
+                        <div style="margin-top:18px; font-size:11px; line-height:1.45;">
+                            <p style="margin:0 0 8px 0; font-weight:700;">Bank account details for payment:</p>
+                            <p style="margin:0;">Account Holder Name: {{ $accountHolderName ?: '-' }}</p>
+                            <p style="margin:0;">Account Number: {{ $accountNumber ?: '-' }}</p>
+                            <p style="margin:0;">IFSC Code: {{ $ifscCode ?: '-' }}</p>
+                            <p style="margin:0;">Branch: {{ $branch ?: '-' }}</p>
+                            <p style="margin:12px 0 0 0;">UPI ID: {{ $upiId ?: '-' }}</p>
+                        </div>
+                    @endif
+
+                    @if ($footerImagePath)
+                        <img src="{{ asset('storage/' . $footerImagePath) }}" alt="Footer" style="position:absolute; left:0; bottom:0; display:block; width:{{ $footerWidth ?? 100 }}%; height:auto; transform:scaleY({{ ($footerHeight ?? 100) / 100 }}); transform-origin:bottom left;">
+                    @endif
                 </div>
 
                 <div class="mt-6 flex justify-end gap-3">

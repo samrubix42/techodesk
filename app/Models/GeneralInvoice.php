@@ -21,8 +21,14 @@ class GeneralInvoice extends Model
         return $this->belongsTo(Client::class);
     }
 
+    public function service(): BelongsTo
+    {
+        return $this->belongsTo(Service::class);
+    }
+
     public function serviceAndPrices(): HasMany
     {
-        return $this->hasMany(InvoiceServiceAndPrice::class, 'general_invoice_id');
+        return $this->hasMany(InvoiceServiceAndPrice::class, 'invoice_id')
+            ->where('is_general_invoice', true);
     }
 }
