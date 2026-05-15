@@ -1,143 +1,144 @@
-
 <div>
+    <!-- Mobile Overlay -->
     <div
-        class="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden"
         x-show="sidebarOpen"
         x-transition.opacity
         x-cloak
         @click="closeSidebar()"
-        aria-hidden="true"
+        class="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
     ></div>
 
+    <!-- Sidebar -->
     <aside
-        class="fixed inset-y-0 left-0 z-50 flex w-60 flex-col border-r border-slate-200/70 bg-white/95 p-4 text-sm text-slate-700 transition-transform duration-300 dark:border-slate-800/80 dark:bg-slate-950/95 dark:text-slate-200 lg:static lg:translate-x-0"
-        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
         x-cloak
+        :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+        class="fixed inset-y-0 left-0 top-16 z-50 flex w-64 flex-col border-r border-slate-200 bg-white transition-all duration-300 dark:border-slate-800 dark:bg-slate-950 lg:static lg:translate-x-0"
     >
-        <div class="flex items-center justify-between">
-            <div>
-                <p class="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">Workspace</p>
-                <p class="text-base font-semibold text-slate-900 dark:text-white">Operations Hub</p>
-            </div>
-            <button
-                type="button"
-                class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-900 lg:hidden"
-                @click="closeSidebar()"
-                aria-label="Close sidebar"
-            >
-                <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <path stroke-linecap="round" d="M6 6l12 12M18 6l-12 12" />
-                </svg>
-            </button>
+
+        <div class="flex h-full flex-col px-3 py-4">
+
+            <!-- Navigation -->
+            <nav class="space-y-1.5">
+
+                <!-- Dashboard -->
+                <a
+                    href="{{ route('dashboard') }}"
+                    wire:navigate
+                    class="{{ request()->routeIs('dashboard')
+                        ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/10 dark:bg-white dark:text-slate-900'
+                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900'
+                    }} group flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium transition-all duration-200"
+                >
+                    <div class="{{ request()->routeIs('dashboard')
+                        ? 'bg-white/10 dark:bg-slate-200'
+                        : 'bg-slate-100 dark:bg-slate-900'
+                    }} flex h-9 w-9 items-center justify-center rounded-xl transition-all">
+                        <i class="ri-home-5-line text-lg"></i>
+                    </div>
+
+                    <span>Dashboard</span>
+                </a>
+
+                <!-- Clients -->
+                <a
+                    href="{{ route('clients') }}"
+                    wire:navigate
+                    class="{{ request()->routeIs('clients')
+                        ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/10 dark:bg-white dark:text-slate-900'
+                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900'
+                    }} group flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium transition-all duration-200"
+                >
+                    <div class="{{ request()->routeIs('clients')
+                        ? 'bg-white/10 dark:bg-slate-200'
+                        : 'bg-slate-100 dark:bg-slate-900'
+                    }} flex h-9 w-9 items-center justify-center rounded-xl transition-all">
+                        <i class="ri-group-line text-lg"></i>
+                    </div>
+
+                    <span>Clients</span>
+                </a>
+
+                <!-- Services -->
+                <a
+                    href="{{ route('services') }}"
+                    wire:navigate
+                    class="{{ request()->routeIs('services')
+                        ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/10 dark:bg-white dark:text-slate-900'
+                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900'
+                    }} group flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium transition-all duration-200"
+                >
+                    <div class="{{ request()->routeIs('services')
+                        ? 'bg-white/10 dark:bg-slate-200'
+                        : 'bg-slate-100 dark:bg-slate-900'
+                    }} flex h-9 w-9 items-center justify-center rounded-xl transition-all">
+                        <i class="ri-briefcase-4-line text-lg"></i>
+                    </div>
+
+                    <span>Services</span>
+                </a>
+
+                <!-- Invoice -->
+                <a
+                    href="{{ route('invoiceing') }}"
+                    wire:navigate
+                    class="{{ request()->routeIs('invoiceing')
+                        ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/10 dark:bg-white dark:text-slate-900'
+                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900'
+                    }} group flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium transition-all duration-200"
+                >
+                    <div class="{{ request()->routeIs('invoiceing')
+                        ? 'bg-white/10 dark:bg-slate-200'
+                        : 'bg-slate-100 dark:bg-slate-900'
+                    }} flex h-9 w-9 items-center justify-center rounded-xl transition-all">
+                        <i class="ri-file-list-3-line text-lg"></i>
+                    </div>
+
+                    <span>Invoice</span>
+                </a>
+
+                <!-- Proforma -->
+                <a
+                    href="{{ route('invoice-list.proforma') }}"
+                    wire:navigate
+                    class="{{ request()->routeIs('invoice-list.proforma')
+                        ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/10 dark:bg-white dark:text-slate-900'
+                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900'
+                    }} group flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium transition-all duration-200"
+                >
+                    <div class="{{ request()->routeIs('invoice-list.proforma')
+                        ? 'bg-white/10 dark:bg-slate-200'
+                        : 'bg-slate-100 dark:bg-slate-900'
+                    }} flex h-9 w-9 items-center justify-center rounded-xl transition-all">
+                        <i class="ri-file-copy-2-line text-lg"></i>
+                    </div>
+
+                    <span>Proforma</span>
+                </a>
+
+                <!-- Settings -->
+                <a
+                    href="{{ route('settings') }}"
+                    wire:navigate
+                    class="{{ request()->routeIs('settings')
+                        ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/10 dark:bg-white dark:text-slate-900'
+                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900'
+                    }} group flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium transition-all duration-200"
+                >
+                    <div class="{{ request()->routeIs('settings')
+                        ? 'bg-white/10 dark:bg-slate-200'
+                        : 'bg-slate-100 dark:bg-slate-900'
+                    }} flex h-9 w-9 items-center justify-center rounded-xl transition-all">
+                        <i class="ri-settings-3-line text-lg"></i>
+                    </div>
+
+                    <span>Settings</span>
+                </a>
+
+            </nav>
+
+ 
+
         </div>
-
-   
-
-        <nav class="mt-5 flex-1 space-y-4">
-            <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Primary</p>
-                <div class="mt-2 space-y-1">
-                    <a class="flex items-center gap-3 rounded-lg bg-slate-900 px-3 py-2 text-white" href="#">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-md bg-white/10">
-                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
-                                <path stroke-linecap="round" d="M3 12l9-9 9 9" />
-                                <path stroke-linecap="round" d="M9 21V9h6v12" />
-                            </svg>
-                        </span>
-                        Dashboard
-                    </a>
-                    <!-- <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="#">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
-                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
-                                <path stroke-linecap="round" d="M4 7h16M4 12h10M4 17h7" />
-                            </svg>
-                        </span>
-                        Projects
-                    </a> -->
-                    <a href="{{route('clients')}}" class="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="#">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
-                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
-                                <path stroke-linecap="round" d="M16 3H8a2 2 0 0 0-2 2v14l6-3 6 3V5a2 2 0 0 0-2-2Z" />
-                            </svg>
-                        </span>
-                        Clients
-                    </a>
-                </div>
-            </div>
-
-            <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Manage</p>
-                <div class="mt-2 space-y-1">
-                    <a href="{{route('settings')}}" wire:navigate class="flex items-center justify-between rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="#">
-                        <span class="flex items-center gap-3">
-                            <span class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
-                                <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
-                                    <path stroke-linecap="round" d="M4 6h16M4 10h16M4 14h10" />
-                                </svg>
-                            </span>
-                            Settings
-                        </span>
-                        <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-slate-900 dark:text-slate-400">24</span>
-                    </a>
-
-
-                        <a href="{{route('services')}}" wire:navigate class="flex items-center justify-between rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="#">
-                        <span class="flex items-center gap-3">
-                            <span class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
-                                <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
-                                    <path stroke-linecap="round" d="M4 6h16M4 10h16M4 14h10" />
-                                </svg>
-                            </span>
-                            service
-                        </span>
-                        <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-slate-900 dark:text-slate-400">24</span>
-                    </a>
-            
-            
-                    <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="#">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
-                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
-                                <path stroke-linecap="round" d="M5 6h14v12H5z" />
-                                <path stroke-linecap="round" d="M8 4v4M16 4v4" />
-                            </svg>
-                        </span>
-                        Calendar
-                    </a>
-                    <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="{{ route('invoiceing.proforma') }}" wire:navigate>
-                        <span class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
-                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
-                                <path stroke-linecap="round" d="M7 7h10M7 12h10M7 17h7" />
-                            </svg>
-                        </span>
-                        Invoice
-                    </a>
-                    <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="{{ route('invoiceing.general') }}" wire:navigate>
-                        <span class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
-                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
-                                <path stroke-linecap="round" d="M5 6h14M5 12h14M5 18h10" />
-                            </svg>
-                        </span>
-                        Tax Invoice
-                    </a>
-                    <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="{{ route('invoice-list.proforma') }}">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
-                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
-                                <path stroke-linecap="round" d="M5 6h14M5 12h14M5 18h10" />
-                            </svg>
-                        </span>
-                        Proforma List
-                    </a>
-                    <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900" href="{{ route('invoice-list.general') }}">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-300">
-                            <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
-                                <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h7" />
-                            </svg>
-                        </span>
-                        Tax Invoice List
-                    </a>
-                </div>
-            </div>
-        </nav>
 
     </aside>
 </div>
