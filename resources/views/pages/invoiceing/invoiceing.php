@@ -21,8 +21,10 @@ new class extends Component
     public array $invoiceItems = [];
     public string $status = 'unpaid';
     public string $invoiceDate = '';
+    public ?string $paymentDueDay = null;
     public bool $confirmOpen = false;
     public string $copyInvoiceType = 'all';
+    public string $copySourceFilter = 'client';
     public string $copyInvoiceSearch = '';
     public bool $copyPreviewOpen = false;
     public ?array $copyPreviewInvoice = null;
@@ -143,25 +145,27 @@ new class extends Component
 
     public function getCopySourceInvoicesProperty(): array
     {
-        if (!$this->selectedClientId) {
+        $sources = collect();
+        $isGlobal = $this->copySourceFilter === 'all';
+
+        if (!$isGlobal && !$this->selectedClientId) {
             return [];
         }
-
-        $sources = collect();
 
         if (in_array($this->copyInvoiceType, ['all', 'proforma'], true)) {
             $sources = $sources->merge(
                 ProformaInvoice::with(['client', 'serviceAndPrices'])
-                    ->where('client_id', $this->selectedClientId)
+                    ->when(!$isGlobal, fn ($q) => $q->where('client_id', $this->selectedClientId))
                     ->when($this->copyInvoiceSearch !== '', function ($query) {
                         $search = '%' . trim($this->copyInvoiceSearch) . '%';
                         $query->where(function ($inner) use ($search) {
                             $inner->where('invoice_number', 'like', $search)
+                                ->orWhereHas('client', fn ($c) => $c->where('name', 'like', $search)->orWhere('business_name', 'like', $search))
                                 ->orWhereHas('serviceAndPrices', fn ($items) => $items->where('service_details', 'like', $search));
                         });
                     })
                     ->latest()
-                    ->limit(8)
+                    ->limit(10)
                     ->get()
                     ->map(fn (ProformaInvoice $invoice) => $this->formatCopySource($invoice, 'proforma'))
             );
@@ -170,16 +174,17 @@ new class extends Component
         if (in_array($this->copyInvoiceType, ['all', 'general'], true)) {
             $sources = $sources->merge(
                 GeneralInvoice::with(['client', 'serviceAndPrices'])
-                    ->where('client_id', $this->selectedClientId)
+                    ->when(!$isGlobal, fn ($q) => $q->where('client_id', $this->selectedClientId))
                     ->when($this->copyInvoiceSearch !== '', function ($query) {
                         $search = '%' . trim($this->copyInvoiceSearch) . '%';
                         $query->where(function ($inner) use ($search) {
                             $inner->where('invoice_number', 'like', $search)
+                                ->orWhereHas('client', fn ($c) => $c->where('name', 'like', $search)->orWhere('business_name', 'like', $search))
                                 ->orWhereHas('serviceAndPrices', fn ($items) => $items->where('service_details', 'like', $search));
                         });
                     })
                     ->latest()
-                    ->limit(8)
+                    ->limit(10)
                     ->get()
                     ->map(fn (GeneralInvoice $invoice) => $this->formatCopySource($invoice, 'general'))
             );
@@ -187,7 +192,7 @@ new class extends Component
 
         return $sources
             ->sortByDesc('created_at')
-            ->take(10)
+            ->take(12)
             ->values()
             ->all();
     }
@@ -221,16 +226,22 @@ new class extends Component
 
     public function openConfirm(): void
     {
-        $this->validate([
+        $rules = [
             'invoiceType' => ['required', 'in:proforma,general'],
             'selectedClientId' => ['required', 'exists:clients,id'],
             'invoiceItems' => ['required', 'array', 'min:1'],
             'invoiceItems.*.service_details' => ['required', 'string'],
             'invoiceItems.*.price' => ['required', 'numeric', 'min:0.01'],
             'selectedServiceId' => ['nullable', 'exists:services,id'],
-            'status' => ['required', 'in:unpaid,paid'],
             'invoiceDate' => ['required', 'date'],
-        ]);
+        ];
+
+        if ($this->invoiceType === 'proforma') {
+            $rules['status'] = ['required', 'in:unpaid,paid'];
+            $rules['paymentDueDay'] = ['nullable', 'date'];
+        }
+
+        $this->validate($rules);
 
         $this->confirmOpen = true;
     }
@@ -242,22 +253,44 @@ new class extends Component
 
     public function getTaxPercentProperty(): float
     {
-        $igst = $this->igst ?? 0;
-        if ($igst > 0) {
-            return $igst;
-        }
+        $client = $this->selectedClient;
+        if (!$client) return 0;
 
-        return ($this->cgst ?? 0) + ($this->sgst ?? 0);
+        $clientState = $client->state;
+        $clientCountry = $client->country;
+        $companyState = $this->companyState;
+
+        $isIndia = strtolower($clientCountry ?? '') === 'india';
+        $isSameState = $isIndia && $clientState && $companyState && (strtolower(trim($clientState)) === strtolower(trim($companyState)));
+
+        if (!$isIndia) {
+            return 0;
+        } elseif ($isSameState) {
+            return ($this->cgst ?? 0) + ($this->sgst ?? 0);
+        } else {
+            return $this->igst ?? 0;
+        }
     }
 
     public function getTaxLabelProperty(): string
     {
-        $igst = $this->igst ?? 0;
-        if ($igst > 0) {
-            return 'IGST (' . number_format($igst, 2) . '%)';
-        }
+        $client = $this->selectedClient;
+        if (!$client) return 'Tax';
 
-        return 'GST (' . number_format($this->taxPercent, 2) . '%)';
+        $clientState = $client->state;
+        $clientCountry = $client->country;
+        $companyState = $this->companyState;
+
+        $isIndia = strtolower($clientCountry ?? '') === 'india';
+        $isSameState = $isIndia && $clientState && $companyState && (strtolower(trim($clientState)) === strtolower(trim($companyState)));
+
+        if (!$isIndia) {
+            return 'No Tax (Export/International)';
+        } elseif ($isSameState) {
+            return 'GST (CGST+SGST) (' . number_format($this->taxPercent, 2) . '%)';
+        } else {
+            return 'IGST (' . number_format($this->taxPercent, 2) . '%)';
+        }
     }
 
     public function getTaxAmountProperty(): float
@@ -291,7 +324,15 @@ new class extends Component
 
     public function getPreviewDueDateProperty(): ?string
     {
-        if ($this->invoiceType !== 'proforma' || $this->proformaDueDays === null || $this->invoiceDate === '') {
+        if ($this->invoiceType !== 'proforma' || $this->invoiceDate === '') {
+            return null;
+        }
+
+        if ($this->paymentDueDay) {
+            return Carbon::parse($this->paymentDueDay)->format('d/m/Y');
+        }
+
+        if ($this->proformaDueDays === null) {
             return null;
         }
 
@@ -339,7 +380,10 @@ new class extends Component
             ->all();
 
         $this->selectedServiceId = $invoice->service_id;
-        $this->status = $invoice->status ?: 'unpaid';
+        if ($invoice instanceof ProformaInvoice) {
+            $this->status = $invoice->status ?: 'unpaid';
+            $this->paymentDueDay = $invoice->payment_due_day;
+        }
         $this->invoiceItems = $items !== [] ? $items : [['service_details' => '', 'price' => null]];
         $this->copyPreviewOpen = false;
 
@@ -380,9 +424,13 @@ new class extends Component
                 'service_id' => $this->selectedServiceId,
                 'invoice_number' => $invoiceNumber,
                 'invoice_date' => $this->invoiceDate,
-                'status' => $this->status,
                 'total_price' => $this->totalAmount,
             ];
+
+            if (!$isGeneral) {
+                $invoiceData['status'] = $this->status;
+                $invoiceData['payment_due_day'] = $this->paymentDueDay;
+            }
 
             $invoice = $isGeneral
                 ? GeneralInvoice::create($invoiceData)
@@ -404,6 +452,7 @@ new class extends Component
         $this->invoiceItems = [['service_details' => '', 'price' => null]];
         $this->selectedServiceId = null;
         $this->invoiceDate = Carbon::now()->format('Y-m-d');
+        $this->paymentDueDay = null;
         $this->step = 1;
 
         $this->dispatch('toast', message: 'Invoice created: ' . $invoiceNumber, type: 'success');
@@ -451,14 +500,15 @@ new class extends Component
 
     private function findCopyInvoice(string $type, int $invoiceId): GeneralInvoice|ProformaInvoice|null
     {
-        if (!in_array($type, ['proforma', 'general'], true) || !$this->selectedClientId) {
+        if (!in_array($type, ['proforma', 'general'], true)) {
             return null;
         }
 
+        $isGlobal = $this->copySourceFilter === 'all';
         $model = $type === 'general' ? GeneralInvoice::class : ProformaInvoice::class;
 
-        return $model::with(['client', 'serviceAndPrices'])
-            ->where('client_id', $this->selectedClientId)
+        return $model::with(['client', 'service', 'serviceAndPrices'])
+            ->when(!$isGlobal, fn ($q) => $q->where('client_id', $this->selectedClientId))
             ->find($invoiceId);
     }
 
@@ -479,7 +529,7 @@ new class extends Component
             'invoice_number' => $invoice->invoice_number,
             'invoice_date' => $invoice->invoice_date?->format('d/m/Y') ?? $invoice->created_at?->format('d/m/Y') ?? '-',
             'client_name' => $invoice->client?->name ?: '-',
-            'status' => strtoupper($invoice->status ?: '-'),
+            'status' => ($invoice instanceof ProformaInvoice) ? strtoupper($invoice->status ?: '-') : null,
             'total_price' => (float) $invoice->total_price,
             'created_at' => $invoice->created_at?->timestamp ?? 0,
             'item_count' => count($items),

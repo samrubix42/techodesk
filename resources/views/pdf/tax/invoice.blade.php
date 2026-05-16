@@ -209,10 +209,13 @@
 
                 <p class="label">To:</p>
 
-                <p>{{ $invoice->client?->name }}</p>
+                <p>{{ $invoice->client?->business_name ?: $invoice->client?->name }}</p>
 
-                @if ($invoice->client?->address)
-                    <p>{{ $invoice->client?->address }}</p>
+                @if ($invoice->client?->address_1)
+                    <p>{{ $invoice->client?->address_1 }}</p>
+                @endif
+                @if ($invoice->client?->address_2)
+                    <p>{{ $invoice->client?->address_2 }}</p>
                 @endif
 
                 <p>
@@ -229,13 +232,6 @@
                     <span class="label">Invoice No.:</span>
                     {{ $invoice->invoice_number }}
                 </p>
-
-                @if (!empty($invoice->status))
-                    <p style="margin-top:6px;">
-                        <span class="label">Status:</span>
-                        {{ strtoupper($invoice->status) }}
-                    </p>
-                @endif
 
             </td>
 
@@ -295,7 +291,7 @@
             <tr class="totals-row">
 
                 <td colspan="2" class="center">
-                    Total (Excluding GST)
+                    Total (Excluding Tax)
                 </td>
 
                 <td>
@@ -305,29 +301,39 @@
             </tr>
 
             @if ($taxPercent > 0)
-
-                <tr class="totals-row">
-
-                    <td colspan="2" class="center">
-
-                        {{ (float) ($settings['tax_igst'] ?? 0) > 0 ? 'IGST' : 'GST' }}
-
-                        ({{ number_format($taxPercent, 2) }}%)
-
-                    </td>
-
-                    <td>
-                        INR {{ number_format($taxAmount, 2) }}
-                    </td>
-
-                </tr>
-
+                @if ($taxType === 'gst')
+                    <tr class="totals-row">
+                        <td colspan="2" class="center">
+                            CGST ({{ number_format($taxPercent / 2, 2) }}%)
+                        </td>
+                        <td>
+                            INR {{ number_format($taxAmount / 2, 2) }}
+                        </td>
+                    </tr>
+                    <tr class="totals-row">
+                        <td colspan="2" class="center">
+                            SGST ({{ number_format($taxPercent / 2, 2) }}%)
+                        </td>
+                        <td>
+                            INR {{ number_format($taxAmount / 2, 2) }}
+                        </td>
+                    </tr>
+                @else
+                    <tr class="totals-row">
+                        <td colspan="2" class="center">
+                            IGST ({{ number_format($taxPercent, 2) }}%)
+                        </td>
+                        <td>
+                            INR {{ number_format($taxAmount, 2) }}
+                        </td>
+                    </tr>
+                @endif
             @endif
 
             <tr class="totals-row">
 
                 <td colspan="2" class="center">
-                    Total {{ $taxPercent > 0 ? '(Including GST)' : '' }}
+                    Total {{ $taxPercent > 0 ? '(Including Tax)' : '' }}
                 </td>
 
                 <td>

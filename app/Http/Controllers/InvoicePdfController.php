@@ -6,6 +6,7 @@ use App\Models\GeneralInvoice;
 use App\Models\ProformaInvoice;
 use App\Models\Setting;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
 
 class InvoicePdfController extends Controller
@@ -61,10 +62,28 @@ class InvoicePdfController extends Controller
         ])->pluck('value', 'key');
 
         $subTotal = (float) $record->serviceAndPrices->sum('price');
-        $igst = (float) ($settings['tax_igst'] ?? 0);
-        $taxPercent = $igst > 0
-            ? $igst
-            : ((float) ($settings['tax_cgst'] ?? 0) + (float) ($settings['tax_sgst'] ?? 0));
+        
+        $clientState = $record->client?->state;
+        $clientCountry = $record->client?->country;
+        $companyState = $settings['company_state'] ?? null;
+
+        $isIndia = strtolower($clientCountry ?? '') === 'india';
+        $isSameState = $isIndia && $clientState && $companyState && (strtolower(trim($clientState)) === strtolower(trim($companyState)));
+        
+        $taxPercent = 0;
+        $taxType = 'none';
+
+        if (!$isIndia) {
+            $taxPercent = 0;
+            $taxType = 'none';
+        } elseif ($isSameState) {
+            $taxPercent = (float) ($settings['tax_cgst'] ?? 0) + (float) ($settings['tax_sgst'] ?? 0);
+            $taxType = 'gst';
+        } else {
+            $taxPercent = (float) ($settings['tax_igst'] ?? 0);
+            $taxType = 'igst';
+        }
+
         $taxAmount = round($subTotal * ($taxPercent / 100), 2);
         $total = round($subTotal + $taxAmount, 2);
 
@@ -75,6 +94,7 @@ class InvoicePdfController extends Controller
             'settings' => $settings,
             'subTotal' => $subTotal,
             'taxPercent' => $taxPercent,
+            'taxType' => $taxType,
             'taxAmount' => $taxAmount,
             'total' => $total,
             'invoiceDate' => $record->invoice_date?->format('d/m/Y') ?? $record->created_at?->format('d/m/Y') ?? now()->format('d/m/Y'),
@@ -94,6 +114,10 @@ class InvoicePdfController extends Controller
 
     private function calculateDueDate(GeneralInvoice|ProformaInvoice $record, $settings): ?string
     {
+        if ($record instanceof ProformaInvoice && $record->payment_due_day) {
+            return Carbon::parse($record->payment_due_day)->format('d/m/Y');
+        }
+
         $days = $settings['invoice_proforma_due_days'] ?? null;
 
         if (!is_numeric($days)) {

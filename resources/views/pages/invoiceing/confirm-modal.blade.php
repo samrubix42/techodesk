@@ -13,9 +13,12 @@
                     <div style="display:grid; grid-template-columns:1fr 170px; gap:18px; margin-top:6px;">
                         <div>
                             <p style="margin:0 0 2px 0;">To:</p>
-                            <p style="margin:0;">{{ $this->selectedClient?->name }}</p>
-                            @if ($this->selectedClient?->address)
-                                <p style="margin:0;">{{ $this->selectedClient?->address }}</p>
+                            <p style="margin:0;">{{ $this->selectedClient?->business_name ?: $this->selectedClient?->name }}</p>
+                            @if ($this->selectedClient?->address_1)
+                                <p style="margin:0;">{{ $this->selectedClient?->address_1 }}</p>
+                            @endif
+                            @if ($this->selectedClient?->address_2)
+                                <p style="margin:0;">{{ $this->selectedClient?->address_2 }}</p>
                             @endif
                             <p style="margin:0;">{{ trim(($this->selectedClient?->city ? $this->selectedClient?->city . ', ' : '') . ($this->selectedClient?->state ?? '')) }}</p>
                             @if (!empty($this->selectedClient?->gst_number))
@@ -50,17 +53,33 @@
                                     </tr>
                                 @endforeach
                                 <tr>
-                                    <td colspan="2" style="border:1px solid #111; padding:3px 5px; text-align:center;">Total (Excluding GST)</td>
+                                    <td colspan="2" style="border:1px solid #111; padding:3px 5px; text-align:center;">Total (Excluding Tax)</td>
                                     <td style="border:1px solid #111; padding:3px 5px;">INR {{ number_format($this->subTotal, 2) }}</td>
                                 </tr>
                                 @if ($this->taxPercent > 0)
-                                    <tr>
-                                        <td colspan="2" style="border:1px solid #111; padding:3px 5px; text-align:center;">{{ $this->taxLabel }}</td>
-                                        <td style="border:1px solid #111; padding:3px 5px;">INR {{ number_format($this->taxAmount, 2) }}</td>
-                                    </tr>
+                                    @php
+                                        $client = $this->selectedClient;
+                                        $isIndia = strtolower($client?->country ?? '') === 'india';
+                                        $isSameState = $isIndia && $client?->state && $this->companyState && (strtolower(trim($client->state)) === strtolower(trim($this->companyState)));
+                                    @endphp
+                                    @if ($isSameState)
+                                        <tr>
+                                            <td colspan="2" style="border:1px solid #111; padding:3px 5px; text-align:center;">CGST ({{ number_format($this->taxPercent / 2, 2) }}%)</td>
+                                            <td style="border:1px solid #111; padding:3px 5px;">INR {{ number_format($this->taxAmount / 2, 2) }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="border:1px solid #111; padding:3px 5px; text-align:center;">SGST ({{ number_format($this->taxPercent / 2, 2) }}%)</td>
+                                            <td style="border:1px solid #111; padding:3px 5px;">INR {{ number_format($this->taxAmount / 2, 2) }}</td>
+                                        </tr>
+                                    @elseif ($isIndia)
+                                        <tr>
+                                            <td colspan="2" style="border:1px solid #111; padding:3px 5px; text-align:center;">IGST ({{ number_format($this->taxPercent, 2) }}%)</td>
+                                            <td style="border:1px solid #111; padding:3px 5px;">INR {{ number_format($this->taxAmount, 2) }}</td>
+                                        </tr>
+                                    @endif
                                 @endif
                                 <tr>
-                                    <td colspan="2" style="border:1px solid #111; padding:3px 5px; text-align:center;">Total {{ $this->taxPercent > 0 ? '(Including GST)' : '' }}</td>
+                                    <td colspan="2" style="border:1px solid #111; padding:3px 5px; text-align:center;">Total {{ $this->taxPercent > 0 ? '(Including Tax)' : '' }}</td>
                                     <td style="border:1px solid #111; padding:3px 5px;">INR {{ number_format($this->totalAmount, 2) }}</td>
                                 </tr>
                             </tbody>
@@ -69,7 +88,7 @@
 
                     <div style="margin-top:14px; font-size:11px;">
                         <p style="margin:0 0 8px 0;">NOTE:</p>
-                        <div>{!! $this->currentNotes !!}</div>
+                        <div style="white-space: pre-wrap;">{!! $this->currentNotes !!}</div>
                     </div>
 
                     @if ($invoiceType === 'proforma')

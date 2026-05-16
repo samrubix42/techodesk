@@ -21,8 +21,8 @@ class SettingsSeeder extends Seeder
             'company_state' => 'Uttar Pradesh',
             'company_country' => 'India',
             'tax_igst' => '18',
-            'tax_cgst' => null,
-            'tax_sgst' => null,
+            'tax_cgst' => '9',
+            'tax_sgst' => '9',
             'invoice_proforma_notes' => '<ul><li>This is a proforma invoice and not a tax invoice.</li><li>Any further addition of requirements will be chargeable as per our pricing standard.</li></ul>',
             'invoice_general_notes' => '<ul><li>Any further addition of requirements will be chargeable as per standard pricing.</li></ul>',
         ];

@@ -66,45 +66,75 @@
                 </div>
 
                 <div class="rounded-xl border border-slate-200 p-4 dark:border-slate-800">
-                    <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+                    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                         <div>
                             <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Copy From Existing Invoice</h3>
-                            <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Copy service, status, and price rows from this client's old invoices. Client, date, and invoice number stay new.</p>
+                            <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Copy items, prices, and status from old invoices.</p>
                         </div>
-                        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:w-[420px]">
-                            <div>
-                                <label class="text-xs font-medium text-slate-600 dark:text-slate-300">Show</label>
-                                <select wire:model.live="copyInvoiceType" class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-800 dark:bg-slate-900/60">
-                                    <option value="all">All invoices</option>
-                                    <option value="proforma">Proforma only</option>
-                                    <option value="general">Tax only</option>
-                                </select>
+                        
+                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                            {{-- Source Filter Toggle --}}
+                            <div class="inline-flex rounded-lg bg-slate-100 p-1 dark:bg-slate-900">
+                                <button type="button" wire:click="$set('copySourceFilter', 'client')" class="rounded-md px-3 py-1.5 text-xs font-medium transition {{ $copySourceFilter === 'client' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300' }}">
+                                    Selected Client
+                                </button>
+                                <button type="button" wire:click="$set('copySourceFilter', 'all')" class="rounded-md px-3 py-1.5 text-xs font-medium transition {{ $copySourceFilter === 'all' ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-white' : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300' }}">
+                                    Global Search
+                                </button>
                             </div>
-                            <div>
-                                <label class="text-xs font-medium text-slate-600 dark:text-slate-300">Search</label>
-                                <input type="text" wire:model.live.debounce.300ms="copyInvoiceSearch" placeholder="Invoice no or service" class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-800 dark:bg-slate-900/60">
+
+                            <div class="flex gap-2">
+                                <select wire:model.live="copyInvoiceType" class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs dark:border-slate-800 dark:bg-slate-900/60">
+                                    <option value="all">All Types</option>
+                                    <option value="proforma">Proforma</option>
+                                    <option value="general">Tax Inv</option>
+                                </select>
+                                <div class="relative">
+                                    <input type="text" wire:model.live.debounce.300ms="copyInvoiceSearch" placeholder="Search no, client or service..." class="w-full rounded-lg border border-slate-300 bg-white pl-8 pr-3 py-1.5 text-xs lg:w-64 dark:border-slate-800 dark:bg-slate-900/60">
+                                    <svg class="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-4 space-y-2">
+                    <div class="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2">
                         @forelse ($this->copySourceInvoices as $source)
-                            <div class="flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50/70 p-3 text-sm md:flex-row md:items-center md:justify-between dark:border-slate-800 dark:bg-slate-900/30">
-                                <div class="min-w-0">
-                                    <div class="flex flex-wrap items-center gap-2">
-                                        <span class="rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-slate-700 ring-1 ring-slate-200 dark:bg-slate-950 dark:text-slate-200 dark:ring-slate-800">{{ $source['type_label'] }}</span>
-                                        <p class="font-semibold text-slate-900 dark:text-white">{{ $source['invoice_number'] }}</p>
-                                        <p class="text-xs text-slate-500">{{ $source['invoice_date'] }}</p>
+                            <div class="group relative flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-3 transition hover:border-slate-900 dark:border-slate-800 dark:bg-slate-950 dark:hover:border-white">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            @if ($source['type'] === 'general')
+                                                <span class="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 ring-1 ring-emerald-600/20 dark:bg-emerald-500/10 dark:text-emerald-400">TAX</span>
+                                            @else
+                                                <span class="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 ring-1 ring-amber-600/20 dark:bg-amber-500/10 dark:text-amber-400">PROFORMA</span>
+                                            @endif
+                                            <span class="text-xs font-bold text-slate-900 dark:text-white">{{ $source['invoice_number'] }}</span>
+                                            <span class="text-[10px] text-slate-400">{{ $source['invoice_date'] }}</span>
+                                        </div>
+                                        <div class="mt-1 truncate">
+                                            <p class="text-[11px] font-semibold text-slate-700 dark:text-slate-300">{{ $source['client_name'] }}</p>
+                                        </div>
                                     </div>
-                                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ $source['item_count'] }} item(s) | {{ $source['status'] }} | INR {{ number_format($source['total_price'], 2) }}</p>
+                                    <div class="flex shrink-0 gap-1.5">
+                                        <button type="button" wire:click="previewCopyInvoice('{{ $source['type'] }}', {{ $source['id'] }})" class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-900">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                        </button>
+                                        <button type="button" wire:click="copyFromInvoice('{{ $source['type'] }}', {{ $source['id'] }})" class="rounded-lg bg-slate-900 px-2.5 py-1.5 text-[11px] font-bold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200">
+                                            Copy
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="flex flex-wrap gap-2">
-                                    <button type="button" wire:click="previewCopyInvoice('{{ $source['type'] }}', {{ $source['id'] }})" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium dark:border-slate-700">Preview</button>
-                                    <button type="button" wire:click="copyFromInvoice('{{ $source['type'] }}', {{ $source['id'] }})" class="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white dark:bg-white dark:text-slate-900">Copy Details</button>
+                                <div class="flex items-center justify-between border-t border-slate-100 pt-2 dark:border-slate-800/50">
+                                    <span class="text-[10px] text-slate-500">{{ $source['item_count'] }} item(s)</span>
+                                    <span class="text-[11px] font-bold text-slate-900 dark:text-white">INR {{ number_format($source['total_price'], 0) }}</span>
                                 </div>
                             </div>
                         @empty
-                            <p class="rounded-lg border border-dashed border-slate-300 p-3 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">No previous invoices found for this client.</p>
+                            <div class="col-span-2 rounded-xl border border-dashed border-slate-200 p-8 text-center dark:border-slate-800">
+                                <p class="text-sm text-slate-500 dark:text-slate-400">No invoices found matching your criteria.</p>
+                            </div>
                         @endforelse
                     </div>
                 </div>
@@ -147,24 +177,41 @@
                     @endforeach
                 </div>
 
-                <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <div>
                         <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Invoice Date</label>
                         <input type="date" wire:model.live="invoiceDate" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-800 dark:bg-slate-900/60">
                         @error('invoiceDate') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
                     </div>
-                    <div>
-                        <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Status</label>
-                        <select wire:model.live="status" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-800 dark:bg-slate-900/60">
-                            <option value="unpaid">Unpaid</option>
-                            <option value="paid">Paid</option>
-                        </select>
-                    </div>
-                    <div class="rounded-xl border border-slate-200 p-3 text-sm dark:border-slate-800">
-                        <p>Subtotal: INR {{ number_format($this->subTotal, 2) }}</p>
-                        <p>Tax: {{ $this->taxLabel }}</p>
-                        <p>Tax Amt: INR {{ number_format($this->taxAmount, 2) }}</p>
-                        <p class="font-semibold">Total: INR {{ number_format($this->totalAmount, 2) }}</p>
+
+                    @if ($invoiceType === 'proforma')
+                        <div>
+                            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Status</label>
+                            <select wire:model.live="status" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-800 dark:bg-slate-900/60">
+                                <option value="unpaid">Unpaid</option>
+                                <option value="paid">Paid</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-slate-700 dark:text-slate-200">Payment Due Date</label>
+                            <input type="date" wire:model.live="paymentDueDay" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-800 dark:bg-slate-900/60">
+                            @error('paymentDueDay') <p class="mt-1 text-xs text-rose-600">{{ $message }}</p> @enderror
+                        </div>
+                    @endif
+
+                    <div class="rounded-xl border border-slate-200 p-3 text-sm dark:border-slate-800 {{ $invoiceType === 'proforma' ? 'col-span-1' : 'col-span-3' }}">
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-500">Subtotal:</span>
+                            <span class="font-medium">INR {{ number_format($this->subTotal, 2) }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-slate-500">{{ $this->taxLabel }}:</span>
+                            <span class="font-medium">INR {{ number_format($this->taxAmount, 2) }}</span>
+                        </div>
+                        <div class="mt-1 flex items-center justify-between border-t border-slate-200 pt-1 dark:border-slate-800">
+                            <span class="font-semibold text-slate-900 dark:text-white">Total:</span>
+                            <span class="font-bold text-slate-900 dark:text-white">INR {{ number_format($this->totalAmount, 2) }}</span>
+                        </div>
                     </div>
                 </div>
 
@@ -188,7 +235,11 @@
                             <div>
                                 <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">{{ $copyPreviewInvoice['type_label'] }}</p>
                                 <h3 class="mt-1 text-lg font-semibold text-slate-900 dark:text-white">{{ $copyPreviewInvoice['invoice_number'] }}</h3>
-                                <p class="mt-1 text-sm text-slate-500">{{ $copyPreviewInvoice['client_name'] }} | {{ $copyPreviewInvoice['invoice_date'] }} | {{ $copyPreviewInvoice['status'] }}</p>
+                                <p class="mt-1 text-sm text-slate-500">
+                                    <span class="font-semibold text-slate-700 dark:text-slate-300">{{ $copyPreviewInvoice['client_name'] }}</span> 
+                                    | {{ $copyPreviewInvoice['invoice_date'] }} 
+                                    | {{ $copyPreviewInvoice['status'] ?: 'N/A' }}
+                                </p>
                             </div>
                             <div class="flex gap-2">
                                 <button type="button" wire:click="copyFromInvoice('{{ $copyPreviewInvoice['type'] }}', {{ $copyPreviewInvoice['id'] }})" class="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white dark:bg-white dark:text-slate-900">Copy Details</button>
