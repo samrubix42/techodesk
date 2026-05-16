@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
-            $table->string('address')->nullable();
+            $table->string('address_1')->nullable();
+            $table->string('address_2')->nullable();
             $table->string('city')->nullable();                              
             $table->string('state')->nullable();
             $table->string('postal_code')->nullable();

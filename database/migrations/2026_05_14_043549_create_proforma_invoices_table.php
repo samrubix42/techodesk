@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('invoice_number')->unique();
             $table->date('invoice_date')->nullable();
             $table->string('status')->default('unpaid');
+            $table->string('payment_due_day')->nullable();
             $table->decimal('total_price', 15, 2)->default(0);
             $table->timestamps();
         });

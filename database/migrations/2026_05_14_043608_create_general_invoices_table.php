@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId('service_id')->nullable()->constrained('services')->nullOnDelete();
             $table->string('invoice_number')->unique();
             $table->date('invoice_date')->nullable();
-            $table->string('status')->default('unpaid');
             $table->decimal('total_price', 15, 2)->default(0);
             $table->timestamps();
         });

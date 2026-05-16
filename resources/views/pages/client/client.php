@@ -12,16 +12,17 @@ new class extends Component
     public string $search = '';
     public ?int $clientId = null;
 
-    public string $name = '';
+    public ?string $business_name = null;
+    public ?string $name = null;
     public ?string $email = null;
     public ?string $phone = null;
-    public ?string $address = null;
+    public ?string $address_1 = null;
+    public ?string $address_2 = null;
     public ?string $city = null;
     public ?string $state = null;
     public ?string $postal_code = null;
-    public ?string $country = null;
+    public string $country = 'India';
     public ?string $gst_number = null;
-    public ?string $business_name = null;
 
     public function updatingSearch(): void
     {
@@ -31,7 +32,7 @@ new class extends Component
     protected function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:255'],
             'email' => [
                 'nullable',
                 'email',
@@ -39,13 +40,14 @@ new class extends Component
                 Rule::unique('clients', 'email')->ignore($this->clientId),
             ],
             'phone' => ['nullable', 'string', 'max:255'],
-            'address' => ['nullable', 'string', 'max:255'],
+            'address_1' => ['nullable', 'string', 'max:255'],
+            'address_2' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:255'],
             'state' => ['nullable', 'string', 'max:255'],
             'postal_code' => ['nullable', 'string', 'max:255'],
             'country' => ['nullable', 'string', 'max:255'],
             'gst_number' => ['nullable', 'string', 'max:255'],
-            'business_name' => ['nullable', 'string', 'max:255'],
+            'business_name' => ['required', 'string', 'max:255'],
         ];
     }
 
@@ -66,6 +68,19 @@ new class extends Component
             ->paginate(10);
     }
 
+    public function getCountriesProperty()
+    {
+        return \App\Models\Country::all();
+    }
+
+    public function getStatesProperty()
+    {
+        if ($this->country === 'India') {
+            return \App\Models\State::all();
+        }
+        return collect();
+    }
+
     public function resetForm(): void
     {
         $this->reset([
@@ -73,14 +88,15 @@ new class extends Component
             'name',
             'email',
             'phone',
-            'address',
+            'address_1',
+            'address_2',
             'city',
             'state',
             'postal_code',
-            'country',
             'gst_number',
             'business_name',
         ]);
+        $this->country = 'India';
         $this->resetValidation();
     }
 
@@ -92,7 +108,8 @@ new class extends Component
         $this->name = $client->name;
         $this->email = $client->email;
         $this->phone = $client->phone;
-        $this->address = $client->address;
+        $this->address_1 = $client->address_1;
+        $this->address_2 = $client->address_2;
         $this->city = $client->city;
         $this->state = $client->state;
         $this->postal_code = $client->postal_code;

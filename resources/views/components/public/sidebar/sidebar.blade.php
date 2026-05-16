@@ -112,7 +112,24 @@
                         <i class="ri-file-copy-2-line text-lg"></i>
                     </div>
 
-                    <span>Proforma</span>
+                    <span>Proforma Invoice List</span>
+                </a>
+                <a
+                    href="{{ route('invoice-list.general') }}"
+                    wire:navigate
+                    class="{{ request()->routeIs('invoice-list.general')
+                        ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/10 dark:bg-white dark:text-slate-900'
+                        : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-900'
+                    }} group flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm font-medium transition-all duration-200"
+                >
+                    <div class="{{ request()->routeIs('invoice-list.general')
+                        ? 'bg-white/10 dark:bg-slate-200'
+                        : 'bg-slate-100 dark:bg-slate-900'
+                    }} flex h-9 w-9 items-center justify-center rounded-xl transition-all">
+                        <i class="ri-file-copy-2-line text-lg"></i>
+                    </div>
+
+                    <span>Tax Invoice List</span>
                 </a>
 
                 <!-- Settings -->
