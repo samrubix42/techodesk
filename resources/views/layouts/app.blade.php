@@ -49,16 +49,16 @@
 <body
     x-data="{
         sidebarOpen: false,
+        isDark: document.documentElement.classList.contains('dark'),
 
         toggleTheme() {
-            const isDark = document.documentElement.classList.contains('dark');
-
-            if (isDark) {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            } else {
+            this.isDark = !this.isDark;
+            if (this.isDark) {
                 document.documentElement.classList.add('dark');
                 localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
             }
         },
 

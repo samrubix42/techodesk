@@ -1,6 +1,6 @@
 
 <header class="sticky top-0 z-30 w-full border-b border-slate-200/70 bg-white/80 backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/70">
-    <div class="mx-auto flex h-16 max-w-[1400px] items-center gap-4 px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto flex h-16 items-center gap-4 px-6 sm:px-6 lg:px-8">
         <div class="flex items-center gap-3">
             <button
                 type="button"
@@ -19,7 +19,7 @@
             </a>
         </div>
 
-        <div class="hidden flex-1 lg:flex">
+        <div class="hidden flex-1 ml-20 lg:flex">
             <div class="relative w-full max-w-xl">
                 <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400">
                     <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -42,13 +42,8 @@
                 @click="toggleTheme()"
                 aria-label="Toggle theme"
             >
-                <svg x-show="!isDark" viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
-                    <path stroke-linecap="round" d="M12 3v2.5M12 18.5V21M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M3 12h2.5M18.5 12H21M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" />
-                    <circle cx="12" cy="12" r="4.2" />
-                </svg>
-                <svg x-show="isDark" x-cloak viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.7">
-                    <path stroke-linecap="round" d="M21 14.5A8.5 8.5 0 0 1 9.5 3a7 7 0 1 0 11.5 11.5Z" />
-                </svg>
+                <i x-show="!isDark" class="ri-sun-line text-lg"></i>
+                <i x-show="isDark" x-cloak class="ri-moon-line text-lg"></i>
             </button>
 
             <button
