@@ -3,133 +3,178 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Alert</title>
+    <title>Payment Alert Notification</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #fafafa;
-            color: #1a1a1a;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f5f7;
+            color: #1e293b;
             margin: 0;
             padding: 0;
             -webkit-font-smoothing: antialiased;
         }
         .wrapper {
             width: 100%;
-            background-color: #fafafa;
-            padding: 40px 20px;
+            background-color: #f4f5f7;
+            padding: 48px 20px;
             box-sizing: border-box;
         }
         .container {
-            max-width: 560px;
+            max-width: 520px;
             margin: 0 auto;
             background-color: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e5e5e5;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
             overflow: hidden;
+            border: 1px solid #e2e8f0;
         }
         .header {
             padding: 32px 32px 24px 32px;
-            border-bottom: 1px solid #f0f0f0;
+            background-color: #ffffff;
+            border-bottom: 1px solid #f1f5f9;
+            text-align: center;
         }
-        .logo {
+        .logo-mark {
+            display: inline-block;
+            height: 36px;
+            width: 36px;
+            line-height: 36px;
+            background-color: #0f172a;
+            color: #ffffff;
             font-size: 14px;
             font-weight: 700;
-            color: #000000;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .logo-text {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+            letter-spacing: -0.01em;
+            margin: 0;
         }
         .content {
             padding: 32px;
         }
         .title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #111111;
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
             margin-top: 0;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
             letter-spacing: -0.02em;
+            text-align: center;
         }
         .intro-text {
             font-size: 14px;
-            line-height: 1.6;
-            color: #666666;
+            line-height: 1.5;
+            color: #64748b;
             margin-top: 0;
             margin-bottom: 24px;
+            text-align: center;
         }
-        .alert-box {
-            background-color: #f8f9fa;
-            border-left: 3px solid #4f46e5;
-            border-radius: 6px;
+        .status-banner {
+            border-radius: 12px;
             padding: 16px;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
+            text-align: left;
         }
-        .alert-box-warning {
+        .status-banner-info {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+        }
+        .status-banner-warning {
             background-color: #fffbeb;
-            border-left: 3px solid #d97706;
-            border-radius: 6px;
-            padding: 16px;
-            margin-bottom: 28px;
+            border: 1px solid #fde68a;
         }
-        .alert-text {
+        .status-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .status-title-info {
+            color: #1d4ed8;
+        }
+        .status-title-warning {
+            color: #b45309;
+        }
+        .status-text {
             font-size: 13px;
             line-height: 1.5;
-            color: #333333;
             margin: 0;
-            font-weight: 500;
         }
-        .table-container {
-            border: 1px solid #e5e5e5;
-            border-radius: 8px;
-            overflow: hidden;
+        .status-text-info {
+            color: #1e40af;
+        }
+        .status-text-warning {
+            color: #92400e;
+        }
+        .details-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
             margin-bottom: 28px;
         }
-        .details-table {
+        .detail-row {
+            display: table;
             width: 100%;
-            border-collapse: collapse;
+            margin-bottom: 12px;
         }
-        .details-table tr:not(:last-child) {
-            border-bottom: 1px solid #f0f0f0;
+        .detail-row:last-child {
+            margin-bottom: 0;
         }
-        .details-table th, .details-table td {
-            padding: 14px 16px;
-            font-size: 13px;
-            text-align: left;
-        }
-        .details-table th {
-            color: #666666;
-            font-weight: 500;
+        .detail-label {
+            display: table-cell;
             width: 35%;
-            background-color: #fafafa;
-        }
-        .details-table td {
-            color: #111111;
+            font-size: 12px;
             font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            vertical-align: top;
+            padding-right: 12px;
+        }
+        .detail-value {
+            display: table-cell;
+            font-size: 14px;
+            font-weight: 500;
+            color: #0f172a;
+            vertical-align: top;
         }
         .btn-container {
-            margin-top: 24px;
-            text-align: left;
+            text-align: center;
+            margin-top: 28px;
         }
         .btn {
             display: inline-block;
             background-color: #0f172a;
             color: #ffffff !important;
             text-decoration: none;
-            padding: 12px 24px;
-            font-size: 13px;
+            padding: 12px 28px;
+            font-size: 14px;
             font-weight: 600;
-            border-radius: 6px;
+            border-radius: 10px;
+            transition: background-color 0.15s ease;
         }
         .footer {
             padding: 24px 32px;
-            background-color: #fafafa;
-            border-top: 1px solid #f0f0f0;
+            background-color: #f8fafc;
+            border-top: 1px solid #f1f5f9;
+            text-align: center;
         }
         .footer p {
             margin: 0 0 6px 0;
             font-size: 11px;
-            color: #888888;
+            color: #94a3b8;
             line-height: 1.5;
+        }
+        .footer p:last-child {
+            margin-bottom: 0;
         }
     </style>
 </head>
@@ -138,62 +183,63 @@
         <div class="container">
             <!-- Header -->
             <div class="header">
-                <span class="logo">Techodesk</span>
+                <span class="logo-mark">TD</span>
+                <h1 class="logo-text">Techodesk</h1>
             </div>
 
             <!-- Content -->
             <div class="content">
                 <h2 class="title">Payment Alert Notification</h2>
                 <p class="intro-text">
-                    This is an automated payment alert notification regarding client services. Please review the details below:
+                    This is an automated payment alert notification regarding client services.
                 </p>
 
-                <!-- Alert Card -->
+                <!-- Status Banner -->
                 @if ($alert->alert_type === 'interval_days')
-                    <div class="alert-box">
-                        <p class="alert-text">
-                            <strong>Interval Period Reached:</strong> The configured payment alert interval of <strong>{{ $alert->days_interval }} days</strong> has passed since this alert was created.
+                    <div class="status-banner status-banner-info">
+                        <div class="status-title status-title-info">Interval Reached</div>
+                        <p class="status-text status-text-info">
+                            The configured payment alert interval of <strong>{{ $alert->days_interval }} days</strong> has passed since this alert was created.
                         </p>
                     </div>
                 @else
-                    <div class="alert-box-warning">
-                        <p class="alert-text">
-                            <strong>Scheduled Date Reached:</strong> The scheduled payment alert target of <strong>{{ $alert->alert_date ? $alert->alert_date->format('M d, Y h:i A') : 'N/A' }}</strong> has been reached.
+                    <div class="status-banner status-banner-warning">
+                        <div class="status-title status-title-warning">Scheduled Date Reached</div>
+                        <p class="status-text status-text-warning">
+                            The scheduled payment alert target of <strong>{{ $alert->alert_date ? $alert->alert_date->format('M d, Y h:i A') : 'N/A' }}</strong> has been reached.
                         </p>
                     </div>
                 @endif
 
-                <!-- Details Table -->
-                <div class="table-container">
-                    <table class="details-table">
-                        <tr>
-                            <th>Client</th>
-                            <td>{{ $alert->client?->business_name ?? $alert->client?->name ?? 'N/A' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Contact Email</th>
-                            <td>{{ $alert->client?->email ?? 'N/A' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Service</th>
-                            <td>{{ $alert->service?->name ?? 'N/A' }}</td>
-                        </tr>
-                        @if ($alert->alert_type === 'interval_days')
-                            <tr>
-                                <th>Days Interval</th>
-                                <td>{{ $alert->days_interval }} days</td>
-                            </tr>
-                        @else
-                            <tr>
-                                <th>Alert Date</th>
-                                <td>{{ $alert->alert_date ? $alert->alert_date->format('M d, Y h:i A') : 'N/A' }}</td>
-                            </tr>
-                        @endif
-                        <tr>
-                            <th>Alert Created</th>
-                            <td>{{ $alert->created_at->format('M d, Y h:i A') }}</td>
-                        </tr>
-                    </table>
+                <!-- Details Card -->
+                <div class="details-card">
+                    <div class="detail-row">
+                        <div class="detail-label">Client</div>
+                        <div class="detail-value">{{ $alert->client?->business_name ?? $alert->client?->name ?? 'N/A' }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Contact</div>
+                        <div class="detail-value">{{ $alert->client?->email ?? 'N/A' }}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Service</div>
+                        <div class="detail-value">{{ $alert->service?->name ?? 'N/A' }}</div>
+                    </div>
+                    @if ($alert->alert_type === 'interval_days')
+                        <div class="detail-row">
+                            <div class="detail-label">Interval</div>
+                            <div class="detail-value">{{ $alert->days_interval }} days</div>
+                        </div>
+                    @else
+                        <div class="detail-row">
+                            <div class="detail-label">Alert Date</div>
+                            <div class="detail-value">{{ $alert->alert_date ? $alert->alert_date->format('M d, Y h:i A') : 'N/A' }}</div>
+                        </div>
+                    @endif
+                    <div class="detail-row">
+                        <div class="detail-label">Created At</div>
+                        <div class="detail-value">{{ $alert->created_at->format('M d, Y h:i A') }}</div>
+                    </div>
                 </div>
 
                 <!-- CTA Button -->
