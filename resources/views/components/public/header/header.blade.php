@@ -64,13 +64,47 @@
                 New
             </button>
 
-            <button
-                type="button"
-                class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white dark:bg-white dark:text-slate-900"
-                aria-label="Open profile"
-            >
-                SA
-            </button>
+            <!-- Profile Dropdown -->
+            <div x-data="{ dropdownOpen: false }" class="relative">
+                <button
+                    @click="dropdownOpen = !dropdownOpen"
+                    @click.outside="dropdownOpen = false"
+                    type="button"
+                    class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white transition hover:opacity-90 dark:bg-white dark:text-slate-900"
+                    aria-label="Open profile"
+                >
+                    {{ auth()->check() ? strtoupper(substr(auth()->user()->name, 0, 2)) : 'US' }}
+                </button>
+                <div 
+                    x-show="dropdownOpen" 
+                    x-transition:enter="transition ease-out duration-100" 
+                    x-transition:enter-start="opacity-0 scale-95" 
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-75"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-95"
+                    x-cloak
+                    class="absolute right-0 mt-2 w-56 origin-top-right rounded-xl border border-slate-200 bg-white py-1 shadow-lg outline-none dark:border-slate-800 dark:bg-slate-950"
+                >
+                    <div class="border-b border-slate-100 px-4 py-2.5 dark:border-slate-800">
+                        <p class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Signed in as</p>
+                        <p class="mt-1 truncate text-sm font-semibold text-slate-800 dark:text-slate-200">{{ auth()->user()->name ?? 'Guest User' }}</p>
+                        <p class="truncate text-xs text-slate-500 dark:text-slate-400">{{ auth()->user()->email ?? '' }}</p>
+                    </div>
+                    <div class="p-1">
+                        <form action="{{ route('logout') }}" method="POST" class="m-0">
+                            @csrf
+                            <button
+                                type="submit"
+                                class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-rose-600 transition hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/20"
+                            >
+                                <i class="ri-logout-box-r-line"></i>
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </header>
