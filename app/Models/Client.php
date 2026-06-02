@@ -18,4 +18,9 @@ class Client extends Model
         'gst_number',
         'business_name',
     ];
+
+    public function projectAlerts()
+    {
+        return $this->hasMany(ProjectAlert::class);
+    }
 }

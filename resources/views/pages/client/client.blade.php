@@ -54,6 +54,7 @@
                             <td class="px-6 py-4 text-slate-600 dark:text-slate-300">{{ $client->business_name ?? '-' }}</td>
                             <td class="px-6 py-4 text-right">
                                 <div class="inline-flex items-center gap-2">
+                                    <button type="button" @click="$dispatch('open-alert-modal'); $wire.openAlertModal({{ $client->id }})" class="rounded-md bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 transition hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-200 dark:hover:bg-blue-900/50">Alerts</button>
                                     <button type="button" @click="$dispatch('open-client-modal'); $wire.openEditModal({{ $client->id }})" class="rounded-md bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-200 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">Edit</button>
                                     <button type="button" @click="$dispatch('open-delete-modal'); $wire.confirmDelete({{ $client->id }})" class="rounded-md bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-700 transition hover:bg-rose-100 dark:bg-rose-900/30 dark:text-rose-200 dark:hover:bg-rose-900/50">Delete</button>
                                 </div>
@@ -82,7 +83,10 @@
                     <div class="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
                         <span>{{ $client->phone ?? '-' }}</span>
                         <span>{{ $client->business_name ?? '-' }}</span>
-                        <button type="button" @click="$dispatch('open-delete-modal'); $wire.confirmDelete({{ $client->id }})" class="rounded-md bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-700 dark:bg-rose-900/30 dark:text-rose-200">Delete</button>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" @click="$dispatch('open-alert-modal'); $wire.openAlertModal({{ $client->id }})" class="rounded-md bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-200">Alerts</button>
+                            <button type="button" @click="$dispatch('open-delete-modal'); $wire.confirmDelete({{ $client->id }})" class="rounded-md bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-700 dark:bg-rose-900/30 dark:text-rose-200">Delete</button>
+                        </div>
                     </div>
                 </article>
             @empty
@@ -103,4 +107,5 @@
 
     @include('pages.client.form-modal')
     @include('pages.client.delete-modal')
+    @include('pages.client.alert-modal')
 </div>
